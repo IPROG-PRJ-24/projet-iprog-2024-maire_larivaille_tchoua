@@ -1,16 +1,17 @@
-﻿int nbGrenade = 10;
+﻿//Valeurs pour tester
+int nbGrenade = 10;
 int positionXOwen = 3;
 int positionYOwen = 4;
-int positionXIR = 5;
-int positionYIR = 6;
+int positionXIR = 2;
+int positionYIR = 2;
 int pdvIR = 100;
-char[,] plateau = new char[10, 8];
+char[,] plateau = new char[10, 10];
 Random rng = new Random();
 plateau[positionXIR, positionYIR] = 'I';
 plateau[positionXOwen, positionYOwen] = 'O';
 bool enervement = false;
 
-// Sous programme pour le lancer d'une grenade
+// Lancer ou non d'une grenade
 void Grenade(int positionXOwen, int positionYOwen, int nbGrenade, int positionXIR, int positionYIR, int pdvIR)
 {
     int coorXGrenade;
@@ -69,16 +70,26 @@ void Grenade(int positionXOwen, int positionYOwen, int nbGrenade, int positionXI
     {
         Console.WriteLine("Owen ne lance pas de grenade.");
     }
-    AfficherPlateau(plateau);
+    AfficherPlateau(plateau, positionXIR, positionYIR);
     Console.WriteLine($"Il vous reste {nbGrenade} grenades.");
 }
 
 Grenade(positionXOwen, positionYOwen, nbGrenade, positionXIR, positionYIR, pdvIR);
+// Remplissage initial du plateau pour test
+for (int i = 0; i < plateau.GetLength(0) - 1; i++)
+{
+    for (int j = 0; j < plateau.GetLength(1) - 1; j++)
+    {
+        plateau[i, j] = '-';
+    }
+}
 
 // Sous programme d'affichage du plateau
 
-void AfficherPlateau(char[,] plateau)
+void AfficherPlateau(char[,] plateau, int positionXIR, int positionYIR)
 {
+    plateau[positionXIR, positionYIR] = 'I';
+    plateau[positionXOwen, positionYOwen] = 'O';
     for (int i = 0; i < plateau.GetLength(0) - 1; i++)
     {
         for (int j = 0; j < plateau.GetLength(1) - 1; j++)
@@ -89,3 +100,62 @@ void AfficherPlateau(char[,] plateau)
         Console.WriteLine("");
     }
 }
+
+void PouvoirBlue(ref int positionXIR, ref int positionYIR) // Lancé que si Blue et IR en même position
+{
+    plateau[positionXIR, positionYIR] = '-'; // Supprimer le caractère I du plateau aux anciennes positions
+    Console.WriteLine("Sélectionnez la direction dans laquelle envoyer l'IR: Nord, Sud, Est ou Ouest ?");
+    string direction = Console.ReadLine()!;
+    if (direction == "Ouest")
+    {
+        for (int i = 1; i <= 3; i++)
+        {
+            if ((positionYIR - i < 0) || (plateau[positionXIR, positionYIR - i] == 'X')) // Si on dépasse les limites du plateau ou qu'une crevasse est atteinte
+                positionYIR -= (i - 1);
+
+        }
+        //Si absence de crevasse et de bordure
+        if ((positionYIR - 3 >= 0) && (plateau[positionXIR, positionYIR - 1] != 'X') && (plateau[positionXIR, positionYIR - 2] != 'X') && (plateau[positionXIR, positionYIR - 3] != 'X'))
+            positionYIR -= 3;
+    }
+    else if (direction == "Est")
+    {
+        for (int i = 1; i <= 3; i++)
+        {
+            if ((positionYIR + i >= plateau.GetLength(1) - 1) || (plateau[positionXIR, positionYIR + i] == 'X'))
+                positionYIR += (i - 1);
+
+        }
+        if ((positionYIR + 3 < plateau.GetLength(1)) && (plateau[positionXIR, positionYIR + 1] != 'X') && (plateau[positionXIR, positionYIR + 2] != 'X') && (plateau[positionXIR, positionYIR + 3] != 'X'))
+            positionYIR += 3;
+    }
+
+    else if (direction == "Sud")
+    {
+        for (int i = 1; i <= 3; i++)
+        {
+            if ((positionXIR + i >= plateau.GetLength(0) - 1) || (plateau[positionXIR + i, positionYIR] == 'X'))
+                positionXIR += (i - 1);
+        }
+        if ((positionXIR + 3 < plateau.GetLength(1)) && (plateau[positionXIR + 1, positionYIR] != 'X') && (plateau[positionXIR + 2, positionYIR] != 'X') && (plateau[positionXIR + 3, positionYIR] != 'X'))
+            positionXIR += 3;
+    }
+
+    else if (direction == "Nord")
+    {
+        for (int i = 1; i <= 3; i++)
+        {
+            if ((positionXIR - i < 0) || (plateau[positionXIR - i, positionYIR] == 'X'))
+                positionXIR -= (i - 1);
+        }
+        if ((positionXIR - 3 >= 0) && (plateau[positionXIR - 1, positionYIR] != 'X') && (plateau[positionXIR - 2, positionYIR] != 'X') && (plateau[positionXIR - 3, positionYIR] != 'X'))
+            positionXIR -= 3;
+    }
+    plateau[positionXIR, positionYIR] = 'I'; // Positionner I aux nouvelles coor
+}
+
+
+//Test
+AfficherPlateau(plateau, positionXIR, positionYIR);
+PouvoirBlue(ref positionXIR, ref positionYIR);
+AfficherPlateau(plateau, positionXIR, positionYIR);
