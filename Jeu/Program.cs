@@ -1,14 +1,14 @@
-﻿//Valeurs pour tester
+﻿//Valeurs pour tester A SUPPRIMER
 int nbGrenade = 10;
 int positionXOwen = 3;
 int positionYOwen = 4;
 int positionXIR = 2;
 int positionYIR = 2;
+int positionXMaisie = 2;
+int positionYMaisie = 3;
 int pdvIR = 100;
 char[,] plateau = new char[10, 10];
 Random rng = new Random();
-plateau[positionXIR, positionYIR] = 'I';
-plateau[positionXOwen, positionYOwen] = 'O';
 bool enervement = false;
 
 // Lancer ou non d'une grenade
@@ -70,12 +70,12 @@ void Grenade(int positionXOwen, int positionYOwen, int nbGrenade, int positionXI
     {
         Console.WriteLine("Owen ne lance pas de grenade.");
     }
-    AfficherPlateau(plateau, positionXIR, positionYIR);
+    AfficherPlateau(plateau);
     Console.WriteLine($"Il vous reste {nbGrenade} grenades.");
 }
 
-Grenade(positionXOwen, positionYOwen, nbGrenade, positionXIR, positionYIR, pdvIR);
-// Remplissage initial du plateau pour test
+//Grenade(positionXOwen, positionYOwen, nbGrenade, positionXIR, positionYIR, pdvIR);
+// Remplissage initial du plateau pour test A SUPPRIMER
 for (int i = 0; i < plateau.GetLength(0) - 1; i++)
 {
     for (int j = 0; j < plateau.GetLength(1) - 1; j++)
@@ -86,10 +86,11 @@ for (int i = 0; i < plateau.GetLength(0) - 1; i++)
 
 // Sous programme d'affichage du plateau
 
-void AfficherPlateau(char[,] plateau, int positionXIR, int positionYIR)
+void AfficherPlateau(char[,] plateau)
 {
-    plateau[positionXIR, positionYIR] = 'I';
     plateau[positionXOwen, positionYOwen] = 'O';
+    plateau[positionXMaisie, positionYMaisie] = 'M';
+    plateau[positionXIR, positionYIR] = 'I';
     for (int i = 0; i < plateau.GetLength(0) - 1; i++)
     {
         for (int j = 0; j < plateau.GetLength(1) - 1; j++)
@@ -155,7 +156,27 @@ void PouvoirBlue(ref int positionXIR, ref int positionYIR) // Lancé que si Blue
 }
 
 
-//Test
-AfficherPlateau(plateau, positionXIR, positionYIR);
-PouvoirBlue(ref positionXIR, ref positionYIR);
-AfficherPlateau(plateau, positionXIR, positionYIR);
+//Test A SUPPRIMER
+//AfficherPlateau(plateau);
+//PouvoirBlue(ref positionXIR, ref positionYIR);
+AfficherPlateau(plateau);
+
+
+void Croquer(int positionXIR, int positionYIR, int positionXOwen, int positionYOwen, int positionXMaisie, int positionYMaisie)
+{
+    if ((positionXIR == positionXMaisie) && (positionYIR == positionYMaisie))
+    {
+        plateau[positionXMaisie, positionYMaisie] = 'I';
+        Console.WriteLine("Maisie a été mangée, fin de la partie");
+    }
+    else if ((positionXIR == positionXOwen) && (positionYIR == positionYOwen))
+    {
+        plateau[positionXOwen, positionYOwen] = 'I';
+        Console.WriteLine("Owen a été mangé, fin de la partie");
+    }
+    else
+        Console.WriteLine("Bien joué ! Personne n'a été croqué.e ");
+}
+
+Croquer(positionXIR, positionYIR, positionXOwen, positionYOwen, positionXMaisie, positionYMaisie);
+AfficherPlateau(plateau);
