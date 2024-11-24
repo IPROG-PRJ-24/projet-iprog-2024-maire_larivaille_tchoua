@@ -16,6 +16,11 @@ string[,] CréerPlateau(int dim1,int dim2)
     PlacerAléatoire("🟦",mat); //Blue
     PlacerAléatoire("🟪",mat); //Maisie
     PlacerAléatoire("🟥",mat); //IR
+    
+    for (int i = 0 ; i < 2 ; i++ )   //Grenades spéciales placées aléatoirement, changer le i<2 si on en veut plus !
+    {
+        PlacerAléatoire("🧨",mat);  //"💥" symbole à utiliser pour les trous de grenade 
+    }
 
     return mat;
 }
@@ -37,7 +42,6 @@ string [,] PlacerAléatoire(string perso, string[,] plateau)
     return plateau;
 }
 
-
 void AfficherPlateau(string[,] mat)      //Afficher le plateau
 {
        for (int i = 0 ; i < mat.GetLength(0) ; i++)	
@@ -57,8 +61,7 @@ int TirerNbAléatoire(int max)   //Tirer un nombre aléatoire
     return(nb);
 }
 
-
-
+//Tests à supprimer
 string[,] plat = CréerPlateau(15,15);
 AfficherPlateau(plat);
 
