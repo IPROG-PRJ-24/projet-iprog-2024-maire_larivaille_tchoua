@@ -1,28 +1,36 @@
 ﻿using System.Reflection.PortableExecutable;
+int positionXOwen = 0;
+int positionYOwen = 0;
+int positionXIR = 0;
+int positionYIR = 0;
+int positionXMaisie = 0;
+int positionYMaisie = 0;
+int positionYBlue = 0;
+int positionXBlue = 0;
 
 string[,] CréerPlateau(int dim1,int dim2) 
 {
-    string[,] mat = new string[dim1,dim2];	            
+    string[,] plateau = new string[dim1,dim2];	            
 
-    for (int i = 0 ; i < mat.GetLength(0) ; i++)	//Initialisation du plateau vide
+    for (int i = 0 ; i < plateau.GetLength(0) ; i++)	//Initialisation du plateau vide
     {
-	    for (int j = 0 ; j < mat.GetLength(1) ; j++)
+	    for (int j = 0 ; j < plateau.GetLength(1) ; j++)
         {
-            mat[i,j] = "⬜";
+            plateau[i,j] = "⬜";
         }
     }
                                                     //Placement aléatoire des joueurs
-    PlacerAléatoire("🟩",mat); //Owen         
-    PlacerAléatoire("🟦",mat); //Blue
-    PlacerAléatoire("🟪",mat); //Maisie
-    PlacerAléatoire("🟥",mat); //IR
+    PlacerAléatoire("🟩",plateau); //Owen         
+    PlacerAléatoire("🟦",plateau); //Blue
+    PlacerAléatoire("🟪",plateau); //Maisie
+    PlacerAléatoire("🟥",plateau); //IR
     
     for (int i = 0 ; i < 2 ; i++ )   //Grenades spéciales placées aléatoirement, changer le i<2 si on en veut plus !
     {
-        PlacerAléatoire("🧨",mat);  //"💥" symbole à utiliser pour les trous de grenade 
+        PlacerAléatoire("🧨",plateau);  //"💥" symbole à utiliser pour les trous de grenade 
     }
 
-    return mat;
+    return plateau;
 }
 
 string [,] PlacerAléatoire(string perso, string[,] plateau)     
@@ -38,17 +46,21 @@ string [,] PlacerAléatoire(string perso, string[,] plateau)
     while (plateau[y,x]!="⬜");
 
     plateau[y,x] = perso;
-
     return plateau;
 }
 
-void AfficherPlateau(string[,] mat)      //Afficher le plateau
+void AfficherPlateau(string[,] plateau)      //Afficher le plateau
 {
-       for (int i = 0 ; i < mat.GetLength(0) ; i++)	
+    plateau[positionYOwen, positionXOwen] = "🟩";
+    plateau[positionYMaisie, positionXMaisie] = "🟪";
+    plateau[positionYBlue, positionXBlue] = "🟦";
+    plateau[positionYIR, positionXIR] = "🟥";
+
+       for (int i = 0 ; i < plateau.GetLength(0) ; i++)	
     {
-	    for (int j = 0 ; j < mat.GetLength(1) ; j++)
+	    for (int j = 0 ; j < plateau.GetLength(1) ; j++)
         {
-            Console.Write(mat[i,j]);
+            Console.Write(plateau[i,j]);
         }
         Console.WriteLine();
     }
@@ -61,7 +73,42 @@ int TirerNbAléatoire(int max)   //Tirer un nombre aléatoire
     return(nb);
 }
 
+void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXMaisie, ref int positionYMaisie, ref int positionXBlue, ref int positionYBlue)
+{
+    for (int i = 0; i <plateau.GetLength(0) ; i++)	
+    {
+        for (int j = 0 ; j < plateau.GetLength(1) ; j++)
+        {
+            if (plateau[i,j] == "🟩")
+            {
+                positionYOwen = i;
+                positionXOwen = j;
+            }
+             if (plateau[i,j] == "🟪")
+            {
+                positionYMaisie = i;
+                positionXMaisie = j;
+            }
+             if (plateau[i,j] == "🟦")
+            {
+                positionYBlue = i;
+                positionXBlue = j;
+            }
+             if (plateau[i,j] == "🟥")
+            {
+                positionYIR = i;
+                positionXIR = j;
+            }   
+        }
+    }  
+}
+
 //Tests à supprimer
-string[,] plat = CréerPlateau(15,15);
-AfficherPlateau(plat);
+string[,] plateau = CréerPlateau(15,15);
+
+RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+
+AfficherPlateau(plateau);
+
+Console.WriteLine($"Position Owen : y : {positionYOwen}, x : {positionXOwen}");
 
