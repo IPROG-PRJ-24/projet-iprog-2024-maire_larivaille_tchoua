@@ -275,6 +275,7 @@ void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 
 string[,] CréerPlateau(int dim1, int dim2)
 {
+    
     string[,] plateau = new string[dim1, dim2];
 
     for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
