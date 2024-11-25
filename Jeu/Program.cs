@@ -1,15 +1,19 @@
 ﻿//Valeurs pour tester A SUPPRIMER
-string[,] plateau = CréerPlateau(15, 15);
-int nbGrenade = plateau.GetLength(0);
-int nbGrenadeSpe = 1;
-int positionYOwen = 2;
-int positionXOwen = 1;
-int positionYIR = 2;
-int positionXIR = 2;
-int positionYMaisie = 2;
-int positionXMaisie = 3;
+int positionYOwen = 0;
+int positionXOwen = 0;
+int positionYIR = 0;
+int positionXIR = 0;
+int positionYMaisie = 0;
+int positionXMaisie = 0;
 int positionYBlue = 0;
 int positionXBlue = 0;
+Console.WriteLine("Déterminez la hauteur du plateau :");
+int hauteurPlateau = Convert.ToInt32(Console.ReadLine()!);
+Console.WriteLine("Déterminez la longueur du plateau :");
+int longueurPlateau = Convert.ToInt32(Console.ReadLine()!);
+string[,] plateau = CréerPlateau(hauteurPlateau, longueurPlateau);
+int nbGrenade = plateau.GetLength(1);
+int nbGrenadeSpe = 1;
 int pdvMaisie = 100;
 int pdvBlue = 100;
 int pdvIR = 10 * nbGrenade;
@@ -120,7 +124,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
             }
         }
 
-        if (Console.ReadLine() == "normale")
+        else if (Console.ReadLine() == "normale")
         {
             if (nbGrenade > 0)
             {
@@ -178,7 +182,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                 Console.WriteLine("Vous n'avez plus de grenades, bonne chance!");
         }
     }
-    if (Console.ReadLine() == "Non")
+    else if (Console.ReadLine() == "Non")
     {
         Console.WriteLine("Owen ne lance pas de grenade.");
     }
@@ -374,10 +378,20 @@ RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR,
 
 AfficherPlateau(plateau);
 
-Console.WriteLine($"Position Owen : y : {positionYOwen}, x : {positionXOwen}");
+Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
+
+if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
+{
+    PouvoirBlue(ref positionYIR, ref positionXIR);
+    AfficherPlateau(plateau);
+}
+
+Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
 
 AfficherPlateau(plateau);
-Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
+
+
+
 //Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
 //AfficherPlateau(plateau);
 //PouvoirBlue(ref positionYIR, ref positionXIR);
