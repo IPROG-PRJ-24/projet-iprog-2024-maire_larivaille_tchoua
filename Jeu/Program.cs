@@ -2,8 +2,8 @@
 char[,] plateau = new char[10, 10];
 int nbGrenade = plateau.GetLength(0);
 int nbGrenadeSpe = 1;
-int positionYOwen = 3;
-int positionXOwen = 4;
+int positionYOwen = 2;
+int positionXOwen = 1;
 int positionYIR = 2;
 int positionXIR = 2;
 int positionYMaisie = 2;
@@ -13,6 +13,9 @@ int pdvBlue = 100;
 int pdvIR = 10 * nbGrenade;
 int coorYGrenadeSpe;
 int coorXGrenadeSpe;
+string nomMaisie = "Maisie";
+string nomBlue = "Blue";
+string nomOwen = "Owen";
 Random rng = new Random();
 bool enervement = false;
 
@@ -56,18 +59,18 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                         enervement = true; //sera plus rapide au prochain déplacement
                         Console.WriteLine("IR est énervée, faites attention au prochain tour");
                     }
-                    if (plateau[coorYGrenade, coorXGrenade] == 'B')
+                    else if (plateau[coorYGrenade, coorXGrenade] == 'B')
                     {
                         Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
                     }
-                    if (plateau[coorYGrenade, coorXGrenade] == 'M')
+                    else if (plateau[coorYGrenade, coorXGrenade] == 'M')
                     {
                         Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
                     }
                     else // sinon on crée une crevasse
                     {
                         plateau[coorYGrenade, coorXGrenade] = 'X';
-                        while ((randomY == 0) && (randomX == 0)) // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX >= plateau.GetLength(1) - 1) || (coorYGrenade + randomY >= plateau.GetLength(0) - 1) || (coorXGrenade + randomX < 0) || (coorYGrenade + randomY < 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
@@ -76,19 +79,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                         coorXGrenadeSpe = coorXGrenade + randomX;
                         if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == 'B')
                         {
-                            pdvBlue /= 2;
-                            if (pdvBlue == 0)
-                                Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
-                            else
-                                Console.WriteLine("Blue a été touchée par l'impact, attention");
+                            SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == 'M')
                         {
-                            pdvMaisie /= 2;
-                            if (pdvMaisie == 0)
-                                Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
-                            else
-                                Console.WriteLine("Maisie a été touchée par l'impact, attention");
+                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
                             plateau[coorYGrenadeSpe, coorXGrenadeSpe] = 'X';
@@ -97,26 +92,18 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
-                        while ((randomY == 0) && (randomX == 0)); // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenadeSpe + randomX >= plateau.GetLength(1) - 1) || (coorYGrenadeSpe + randomY >= plateau.GetLength(0) - 1) || (coorXGrenadeSpe + randomX < 0) || (coorYGrenadeSpe + randomY < 0))); // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
                         if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == 'B')
                         {
-                            pdvBlue /= 2;
-                            if (pdvBlue == 0)
-                                Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
-                            else
-                                Console.WriteLine("Blue a été touchée par l'impact, attention");
+                            SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == 'M')
                         {
-                            pdvMaisie /= 2;
-                            if (pdvMaisie == 0)
-                                Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
-                            else
-                                Console.WriteLine("Maisie a été touchée par l'impact, attention");
+                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
                         plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] = 'X';
                     }
@@ -167,33 +154,23 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                     else // sinon on crée une crevasse
                     {
                         plateau[coorYGrenade, coorXGrenade] = 'X';
-                        while ((randomY == 0) && (randomX == 0)) // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX >= plateau.GetLength(1) - 1) || (coorYGrenade + randomY >= plateau.GetLength(0) - 1) || (coorXGrenade + randomX < 0) || (coorYGrenade + randomY < 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
                         if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == 'B')
                         {
-                            pdvBlue /= 2;
-                            if (pdvBlue == 0)
-                                Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
-                            if (pdvBlue > 0)
-                                Console.WriteLine("Blue a été touchée par l'impact, attention");
+                            SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == 'M')
                         {
-                            pdvMaisie /= 2;
-                            if (pdvMaisie == 0)
-                                Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
-                            if (pdvMaisie > 0)
-                                Console.WriteLine("Maisie a été touchée par l'impact, attention");
+                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
                             plateau[coorYGrenade + randomY, coorXGrenade + randomX] = 'X';
                     }
-
                 }
-
             }
             if (nbGrenade == 0)
                 Console.WriteLine("Vous n'avez plus de grenades, bonne chance!");
@@ -207,6 +184,16 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
     Console.WriteLine($"Il vous reste {nbGrenade} grenades et {nbGrenadeSpe} grenades spéciales.");
 }
 
+
+//Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
+void SystèmePV(int pV, string nom, string owen)
+{
+    pV /= 2;
+    if (pV == 0)
+        Console.WriteLine($"{nom} a été tuée par {owen}. Fin de la partie.");
+    if (pdvMaisie > 0)
+        Console.WriteLine($"{nom} a été touchée par l'impact, attention");
+}
 
 // Sous programme d'affichage du plateau
 
