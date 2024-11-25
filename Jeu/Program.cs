@@ -1,18 +1,23 @@
 ﻿//Valeurs pour tester A SUPPRIMER
-int nbGrenade = 10;
+char[,] plateau = new char[10, 10];
+int nbGrenade = plateau.GetLength(0);
+int nbGrenadeSpe = 1;
 int positionXOwen = 3;
 int positionYOwen = 4;
 int positionXIR = 2;
 int positionYIR = 2;
 int positionXMaisie = 2;
 int positionYMaisie = 3;
-int pdvIR = 100;
-char[,] plateau = new char[10, 10];
+int pdvMaisie = 100;
+int pdvBlue = 100;
+int pdvIR = 10 * nbGrenade;
+int coorXGrenadeSpe;
+int coorYGrenadeSpe;
 Random rng = new Random();
 bool enervement = false;
 
-// Lancer ou non d'une grenade
-void Grenade(int positionXOwen, int positionYOwen, int nbGrenade, int positionXIR, int positionYIR, int pdvIR)
+// Lancer ou non d'une grenade, spéciale ou non
+void Grenade(int positionXOwen, int positionYOwen, int nbGrenade, int positionXIR, int positionYIR, int pdvIR, int pdvBlue, int pdvMaisie)
 {
     int coorXGrenade;
     int coorYGrenade;
@@ -21,68 +26,187 @@ void Grenade(int positionXOwen, int positionYOwen, int nbGrenade, int positionXI
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
     if (Console.ReadLine() == "Oui")
     {
-        nbGrenade -= 1;
-        if (nbGrenade > 0)
+        Console.WriteLine("Lancer une grenade spéciale ou normale?");
+        if (Console.ReadLine() == "spéciale")
         {
-            Console.WriteLine("Sélectionnez où lancer la grenade:");
-            Console.WriteLine("Entrez le numéro de colonne :");
-            coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
-            Console.WriteLine("Entrez le numéro de ligne :");
-            coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
-            while ((coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3) || (coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3))
+            if (nbGrenadeSpe > 0)
             {
-                Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
+                nbGrenadeSpe -= 1;
                 Console.WriteLine("Sélectionnez où lancer la grenade:");
-                Console.WriteLine("Entrez le numéro de colonne :");
-                coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
                 Console.WriteLine("Entrez le numéro de ligne :");
+                coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                Console.WriteLine("Entrez le numéro de colonne :");
                 coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
-            }
-            if ((coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3) || (coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3))
-            {
-                if (plateau[coorXGrenade, coorYGrenade] == 'I') // Savoir si l'IR a été touchée et lui enlever des pv et pas de crevasse
+                while ((coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3) || (coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3))
                 {
-                    Console.WriteLine("IR a été touchée, -10 points de vie");
-                    pdvIR -= 10;
-                    Console.WriteLine($"Points de vie de l'IR : {pdvIR}");
-                    enervement = true; //sera plus rapide au prochain déplacement
-                    Console.WriteLine("IR est énervée, faites attention au prochain tour");
+                    Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
+                    Console.WriteLine("Sélectionnez où lancer la grenade:");
+                    Console.WriteLine("Entrez le numéro de ligne :");
+                    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                    Console.WriteLine("Entrez le numéro de colonne :");
+                    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
                 }
-                else // sinon on crée une crevasse
+                if ((coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3) || (coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3))
                 {
-                    plateau[coorXGrenade, coorYGrenade] = 'X';
-                    while ((randomX == 0) && (randomY == 0)) // Pour éviter que la case random soit la même que celle où la grenade atterit
+                    if (plateau[coorXGrenade, coorYGrenade] == 'I') // Savoir si l'IR a été touchée et lui enlever des pv et pas de crevasse
                     {
-                        randomX = rng.Next(-1, 2);
-                        randomY = rng.Next(-1, 2);
+                        Console.WriteLine("IR a été touchée, -10 points de vie");
+                        pdvIR -= 10;
+                        Console.WriteLine($"Points de vie de l'IR : {pdvIR}");
+                        enervement = true; //sera plus rapide au prochain déplacement
+                        Console.WriteLine("IR est énervée, faites attention au prochain tour");
                     }
-                    plateau[coorXGrenade + randomX, coorYGrenade + randomY] = 'X';
+                    if (plateau[coorXGrenade, coorYGrenade] == 'B')
+                    {
+                        Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
+                    }
+                    if (plateau[coorXGrenade, coorYGrenade] == 'M')
+                    {
+                        Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
+                    }
+                    else // sinon on crée une crevasse
+                    {
+                        plateau[coorXGrenade, coorYGrenade] = 'X';
+                        while ((randomX == 0) && (randomY == 0)) // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        {
+                            randomX = rng.Next(-1, 2);
+                            randomY = rng.Next(-1, 2);
+                        }
+                        coorXGrenadeSpe = coorXGrenade + randomX;
+                        coorYGrenadeSpe = coorYGrenade + randomY;
+                        if (plateau[coorXGrenadeSpe, coorYGrenadeSpe] == 'B')
+                        {
+                            pdvBlue /= 2;
+                            if (pdvBlue == 0)
+                                Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
+                            else
+                                Console.WriteLine("Blue a été touchée par l'impact, attention");
+                        }
+                        else if (plateau[coorXGrenadeSpe, coorYGrenadeSpe] == 'M')
+                        {
+                            pdvMaisie /= 2;
+                            if (pdvMaisie == 0)
+                                Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
+                            else
+                                Console.WriteLine("Maisie a été touchée par l'impact, attention");
+                        }
+                        else
+                            plateau[coorXGrenadeSpe, coorYGrenadeSpe] = 'X';
+                        do
+                        {
+                            randomX = rng.Next(-1, 2);
+                            randomY = rng.Next(-1, 2);
+                        }
+                        while ((randomX == 0) && (randomY == 0)); // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        {
+                            randomX = rng.Next(-1, 2);
+                            randomY = rng.Next(-1, 2);
+                        }
+                        if (plateau[coorXGrenadeSpe + randomX, coorYGrenadeSpe + randomY] == 'B')
+                        {
+                            pdvBlue /= 2;
+                            if (pdvBlue == 0)
+                                Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
+                            else
+                                Console.WriteLine("Blue a été touchée par l'impact, attention");
+                        }
+                        else if (plateau[coorXGrenadeSpe + randomX, coorYGrenadeSpe + randomY] == 'M')
+                        {
+                            pdvMaisie /= 2;
+                            if (pdvMaisie == 0)
+                                Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
+                            else
+                                Console.WriteLine("Maisie a été touchée par l'impact, attention");
+                        }
+                        plateau[coorXGrenadeSpe + randomX, coorYGrenadeSpe + randomY] = 'X';
+                    }
+
                 }
 
             }
-
+            else
+            {
+                Console.WriteLine("Vous n'avez plus de grenade spéciale");
+                Console.WriteLine("Voulez vous lancer une grenade normale? (si oui, répondre normale)");
+            }
         }
-        if (nbGrenade == 0)
-            Console.WriteLine("Vous n'avez plus de grenades, bonne chance!");
-    }
 
+        if (Console.ReadLine() == "normale")
+        {
+            nbGrenade -= 1;
+            if (nbGrenade > 0)
+            {
+                Console.WriteLine("Sélectionnez où lancer la grenade:");
+                Console.WriteLine("Entrez le numéro de ligne :");
+                coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                Console.WriteLine("Entrez le numéro de colonne :");
+                coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
+                while ((coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3) || (coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3))
+                {
+                    Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
+                    Console.WriteLine("Sélectionnez où lancer la grenade:");
+                    Console.WriteLine("Entrez le numéro de ligne :");
+                    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                    Console.WriteLine("Entrez le numéro de colonne :");
+                    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
+                }
+                if ((coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3) || (coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3))
+                {
+                    if (plateau[coorXGrenade, coorYGrenade] == 'I') // Savoir si l'IR a été touchée et lui enlever des pv et pas de crevasse
+                    {
+                        Console.WriteLine("IR a été touchée, -10 points de vie");
+                        pdvIR -= 10;
+                        Console.WriteLine($"Points de vie de l'IR : {pdvIR}");
+                        enervement = true; //sera plus rapide au prochain déplacement
+                        Console.WriteLine("IR est énervée, faites attention au prochain tour");
+                    }
+                    else if (plateau[coorXGrenade, coorYGrenade] == 'B')
+                        Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
+                    else if (plateau[coorXGrenade, coorYGrenade] == 'M')
+                        Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
+                    else // sinon on crée une crevasse
+                    {
+                        plateau[coorXGrenade, coorYGrenade] = 'X';
+                        while ((randomX == 0) && (randomY == 0)) // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        {
+                            randomX = rng.Next(-1, 2);
+                            randomY = rng.Next(-1, 2);
+                        }
+                        if (plateau[coorXGrenade + randomX, coorYGrenade + randomY] == 'B')
+                        {
+                            pdvBlue /= 2;
+                            if (pdvBlue == 0)
+                                Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
+                            if (pdvBlue > 0)
+                                Console.WriteLine("Blue a été touchée par l'impact, attention");
+                        }
+                        else if (plateau[coorXGrenade + randomX, coorYGrenade + randomY] == 'M')
+                        {
+                            pdvMaisie /= 2;
+                            if (pdvMaisie == 0)
+                                Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
+                            if (pdvMaisie > 0)
+                                Console.WriteLine("Maisie a été touchée par l'impact, attention");
+                        }
+                        else
+                            plateau[coorXGrenade + randomX, coorYGrenade + randomY] = 'X';
+                    }
+
+                }
+
+            }
+            if (nbGrenade == 0)
+                Console.WriteLine("Vous n'avez plus de grenades, bonne chance!");
+        }
+    }
     if (Console.ReadLine() == "Non")
     {
         Console.WriteLine("Owen ne lance pas de grenade.");
     }
     AfficherPlateau(plateau);
-    Console.WriteLine($"Il vous reste {nbGrenade} grenades.");
+    Console.WriteLine($"Il vous reste {nbGrenade} grenades et {nbGrenadeSpe} grenades spéciales.");
 }
 
-//Grenade(positionXOwen, positionYOwen, nbGrenade, positionXIR, positionYIR, pdvIR);
-// Remplissage initial du plateau pour test A SUPPRIMER
-for (int i = 0; i < plateau.GetLength(0) - 1; i++)
-{
-    for (int j = 0; j < plateau.GetLength(1) - 1; j++)
-    {
-        plateau[i, j] = '-';
-    }
-}
 
 // Sous programme d'affichage du plateau
 
@@ -155,13 +279,6 @@ void PouvoirBlue(ref int positionXIR, ref int positionYIR) // Lancé que si Blue
     plateau[positionXIR, positionYIR] = 'I'; // Positionner I aux nouvelles coor
 }
 
-
-//Test A SUPPRIMER
-//AfficherPlateau(plateau);
-//PouvoirBlue(ref positionXIR, ref positionYIR);
-AfficherPlateau(plateau);
-
-
 void Croquer(int positionXIR, int positionYIR, int positionXOwen, int positionYOwen, int positionXMaisie, int positionYMaisie)
 {
     if ((positionXIR == positionXMaisie) && (positionYIR == positionYMaisie))
@@ -178,5 +295,25 @@ void Croquer(int positionXIR, int positionYIR, int positionXOwen, int positionYO
         Console.WriteLine("Bien joué ! Personne n'a été croqué.e ");
 }
 
-Croquer(positionXIR, positionYIR, positionXOwen, positionYOwen, positionXMaisie, positionYMaisie);
+void RecupererGrenadeSpe(int positionXOwen, int positionYOwen)
+{
+    if (plateau[positionXOwen, positionYOwen] == 'G')
+        nbGrenadeSpe += 1;
+}
+
+// Remplissage initial du plateau pour test A SUPPRIMER
+for (int i = 0; i < plateau.GetLength(0) - 1; i++)
+{
+    for (int j = 0; j < plateau.GetLength(1) - 1; j++)
+    {
+        plateau[i, j] = '-';
+    }
+}
+
+
+//TESTS A SUPPRIMER
 AfficherPlateau(plateau);
+Grenade(positionXOwen, positionYOwen, nbGrenade, positionXIR, positionYIR, pdvIR, pdvBlue, pdvMaisie);
+//Croquer(positionXIR, positionYIR, positionXOwen, positionYOwen, positionXMaisie, positionYMaisie);
+//AfficherPlateau(plateau);
+//PouvoirBlue(ref positionXIR, ref positionYIR);
