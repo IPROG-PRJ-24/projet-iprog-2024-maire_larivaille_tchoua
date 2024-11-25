@@ -1,5 +1,5 @@
-﻿﻿//Valeurs pour tester A SUPPRIMER
-char[,] plateau = new char[10, 10];
+﻿//Valeurs pour tester A SUPPRIMER
+string[,] plateau = CréerPlateau(15, 15);
 int nbGrenade = plateau.GetLength(0);
 int nbGrenadeSpe = 1;
 int positionYOwen = 2;
@@ -8,6 +8,8 @@ int positionYIR = 2;
 int positionXIR = 2;
 int positionYMaisie = 2;
 int positionXMaisie = 3;
+int positionYBlue = 0;
+int positionXBlue = 0;
 int pdvMaisie = 100;
 int pdvBlue = 100;
 int pdvIR = 10 * nbGrenade;
@@ -51,7 +53,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                 }
                 if ((coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3) || (coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3))
                 {
-                    if (plateau[coorYGrenade, coorXGrenade] == 'I') // Savoir si l'IR a été touchée et lui enlever des pv et pas de crevasse
+                    if (plateau[coorYGrenade, coorXGrenade] == "🟥") // Savoir si l'IR a été touchée et lui enlever des pv et pas de crevasse
                     {
                         Console.WriteLine("IR a été touchée, -10 points de vie");
                         pdvIR -= 10;
@@ -59,17 +61,17 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                         enervement = true; //sera plus rapide au prochain déplacement
                         Console.WriteLine("IR est énervée, faites attention au prochain tour");
                     }
-                    else if (plateau[coorYGrenade, coorXGrenade] == 'B')
+                    else if (plateau[coorYGrenade, coorXGrenade] == "🟦")
                     {
                         Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
                     }
-                    else if (plateau[coorYGrenade, coorXGrenade] == 'M')
+                    else if (plateau[coorYGrenade, coorXGrenade] == "🟪")
                     {
                         Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
                     }
                     else // sinon on crée une crevasse
                     {
-                        plateau[coorYGrenade, coorXGrenade] = 'X';
+                        plateau[coorYGrenade, coorXGrenade] = "💥";
                         while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX >= plateau.GetLength(1) - 1) || (coorYGrenade + randomY >= plateau.GetLength(0) - 1) || (coorXGrenade + randomX < 0) || (coorYGrenade + randomY < 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
@@ -77,16 +79,16 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                         }
                         coorYGrenadeSpe = coorYGrenade + randomY;
                         coorXGrenadeSpe = coorXGrenade + randomX;
-                        if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == 'B')
+                        if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == "🟦")
                         {
                             SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
-                        else if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == 'M')
+                        else if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == "🟪")
                         {
                             SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
-                            plateau[coorYGrenadeSpe, coorXGrenadeSpe] = 'X';
+                            plateau[coorYGrenadeSpe, coorXGrenadeSpe] = "💥";
                         do
                         {
                             randomY = rng.Next(-1, 2);
@@ -97,15 +99,15 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
-                        if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == 'B')
+                        if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == "🟦")
                         {
                             SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
-                        else if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == 'M')
+                        else if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == "🟪")
                         {
                             SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
-                        plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] = 'X';
+                        plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] = "💥";
                     }
 
                 }
@@ -139,7 +141,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                 }
                 if ((coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3) || (coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3))
                 {
-                    if (plateau[coorYGrenade, coorXGrenade] == 'I') // Savoir si l'IR a été touchée et lui enlever des pv et pas de crevasse
+                    if (plateau[coorYGrenade, coorXGrenade] == "🟥") // Savoir si l'IR a été touchée et lui enlever des pv et pas de crevasse
                     {
                         Console.WriteLine("IR a été touchée, -10 points de vie");
                         pdvIR -= 10;
@@ -147,28 +149,28 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                         enervement = true; //sera plus rapide au prochain déplacement
                         Console.WriteLine("IR est énervée, faites attention au prochain tour");
                     }
-                    else if (plateau[coorYGrenade, coorXGrenade] == 'B')
+                    else if (plateau[coorYGrenade, coorXGrenade] == "🟦")
                         Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
-                    else if (plateau[coorYGrenade, coorXGrenade] == 'M')
+                    else if (plateau[coorYGrenade, coorXGrenade] == "🟪")
                         Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
                     else // sinon on crée une crevasse
                     {
-                        plateau[coorYGrenade, coorXGrenade] = 'X';
+                        plateau[coorYGrenade, coorXGrenade] = "💥";
                         while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX >= plateau.GetLength(1) - 1) || (coorYGrenade + randomY >= plateau.GetLength(0) - 1) || (coorXGrenade + randomX < 0) || (coorYGrenade + randomY < 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
-                        if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == 'B')
+                        if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == "🟦")
                         {
                             SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
-                        else if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == 'M')
+                        else if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == "🟪")
                         {
                             SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
-                            plateau[coorYGrenade + randomY, coorXGrenade + randomX] = 'X';
+                            plateau[coorYGrenade + randomY, coorXGrenade + randomX] = "💥";
                     }
                 }
             }
@@ -195,50 +197,32 @@ void SystèmePV(int pV, string nom, string owen)
         Console.WriteLine($"{nom} a été touchée par l'impact, attention");
 }
 
-// Sous programme d'affichage du plateau
-
-void AfficherPlateau(char[,] plateau)
-{
-    plateau[positionYOwen, positionXOwen] = 'O';
-    plateau[positionYMaisie, positionXMaisie] = 'M';
-    plateau[positionYIR, positionXIR] = 'I';
-    for (int i = 0; i < plateau.GetLength(0) - 1; i++)
-    {
-        for (int j = 0; j < plateau.GetLength(1) - 1; j++)
-        {
-            Console.Write(plateau[i, j] + "\t");
-        }
-
-        Console.WriteLine("");
-    }
-}
-
 void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue et IR en même position
 {
-    plateau[positionYIR, positionXIR] = '-'; // Supprimer le caractère I du plateau aux anciennes positions
+    plateau[positionYIR, positionXIR] = "⬜"; // Supprimer le caractère I du plateau aux anciennes positions
     Console.WriteLine("Sélectionnez la direction dans laquelle envoyer l'IR: Nord, Sud, Est ou Ouest ?");
     string direction = Console.ReadLine()!;
     if (direction == "Ouest")
     {
         for (int i = 1; i <= 3; i++)
         {
-            if ((positionXIR - i < 0) || (plateau[positionYIR, positionXIR - i] == 'X')) // Si on dépasse les limites du plateau ou qu'une crevasse est atteinte
+            if ((positionXIR - i < 0) || (plateau[positionYIR, positionXIR - i] == "💥")) // Si on dépasse les limites du plateau ou qu'une crevasse est atteinte
                 positionXIR -= (i - 1);
 
         }
         //Si absence de crevasse et de bordure
-        if ((positionXIR - 3 >= 0) && (plateau[positionYIR, positionXIR - 1] != 'X') && (plateau[positionYIR, positionXIR - 2] != 'X') && (plateau[positionYIR, positionXIR - 3] != 'X'))
+        if ((positionXIR - 3 >= 0) && (plateau[positionYIR, positionXIR - 1] != "💥") && (plateau[positionYIR, positionXIR - 2] != "💥") && (plateau[positionYIR, positionXIR - 3] != "💥"))
             positionXIR -= 3;
     }
     else if (direction == "Est")
     {
         for (int i = 1; i <= 3; i++)
         {
-            if ((positionXIR + i >= plateau.GetLength(1) - 1) || (plateau[positionYIR, positionXIR + i] == 'X'))
+            if ((positionXIR + i >= plateau.GetLength(1) - 1) || (plateau[positionYIR, positionXIR + i] == "💥"))
                 positionXIR += (i - 1);
 
         }
-        if ((positionXIR + 3 < plateau.GetLength(1)) && (plateau[positionYIR, positionXIR + 1] != 'X') && (plateau[positionYIR, positionXIR + 2] != 'X') && (plateau[positionYIR, positionXIR + 3] != 'X'))
+        if ((positionXIR + 3 < plateau.GetLength(1)) && (plateau[positionYIR, positionXIR + 1] != "💥") && (plateau[positionYIR, positionXIR + 2] != "💥") && (plateau[positionYIR, positionXIR + 3] != "💥"))
             positionXIR += 3;
     }
 
@@ -246,10 +230,10 @@ void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue
     {
         for (int i = 1; i <= 3; i++)
         {
-            if ((positionYIR + i >= plateau.GetLength(0) - 1) || (plateau[positionYIR + i, positionXIR] == 'X'))
+            if ((positionYIR + i >= plateau.GetLength(0) - 1) || (plateau[positionYIR + i, positionXIR] == "💥"))
                 positionYIR += (i - 1);
         }
-        if ((positionYIR + 3 < plateau.GetLength(1)) && (plateau[positionYIR + 1, positionXIR] != 'X') && (plateau[positionYIR + 2, positionXIR] != 'X') && (plateau[positionYIR + 3, positionXIR] != 'X'))
+        if ((positionYIR + 3 < plateau.GetLength(1)) && (plateau[positionYIR + 1, positionXIR] != "💥") && (plateau[positionYIR + 2, positionXIR] != "💥") && (plateau[positionYIR + 3, positionXIR] != "💥"))
             positionYIR += 3;
     }
 
@@ -257,25 +241,25 @@ void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue
     {
         for (int i = 1; i <= 3; i++)
         {
-            if ((positionYIR - i < 0) || (plateau[positionYIR - i, positionXIR] == 'X'))
+            if ((positionYIR - i < 0) || (plateau[positionYIR - i, positionXIR] == "💥"))
                 positionYIR -= (i - 1);
         }
-        if ((positionYIR - 3 >= 0) && (plateau[positionYIR - 1, positionXIR] != 'X') && (plateau[positionYIR - 2, positionXIR] != 'X') && (plateau[positionYIR - 3, positionXIR] != 'X'))
+        if ((positionYIR - 3 >= 0) && (plateau[positionYIR - 1, positionXIR] != "💥") && (plateau[positionYIR - 2, positionXIR] != "💥") && (plateau[positionYIR - 3, positionXIR] != "💥"))
             positionYIR -= 3;
     }
-    plateau[positionYIR, positionXIR] = 'I'; // Positionner I aux nouvelles coor
+    plateau[positionYIR, positionXIR] = "🟥"; // Positionner I aux nouvelles coor
 }
 
 void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXOwen, int positionYMaisie, int positionXMaisie)
 {
     if ((positionYIR == positionYMaisie) && (positionXIR == positionXMaisie))
     {
-        plateau[positionYMaisie, positionXMaisie] = 'I';
+        plateau[positionYMaisie, positionXMaisie] = "🟥";
         Console.WriteLine("Maisie a été mangée, fin de la partie");
     }
     else if ((positionYIR == positionYOwen) && (positionXIR == positionXOwen))
     {
-        plateau[positionYOwen, positionXOwen] = 'I';
+        plateau[positionYOwen, positionXOwen] = "🟥";
         Console.WriteLine("Owen a été mangé, fin de la partie");
     }
     else
@@ -284,63 +268,37 @@ void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXO
 
 void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 {
-    if (plateau[positionYOwen, positionXOwen] == 'G')
+    if (plateau[positionYOwen, positionXOwen] == "🧨")
         nbGrenadeSpe += 1;
-    plateau[positionYOwen, positionXOwen] = 'O';
+    plateau[positionYOwen, positionXOwen] = "🟩";
 }
 
-// Remplissage initial du plateau pour test A SUPPRIMER
-for (int i = 0; i < plateau.GetLength(0) - 1; i++)
+string[,] CréerPlateau(int dim1, int dim2)
 {
-    for (int j = 0; j < plateau.GetLength(1) - 1; j++)
+    string[,] plateau = new string[dim1, dim2];
+
+    for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
     {
-        plateau[i, j] = '-';
-    }
-}
-
-
-//TESTS A SUPPRIMER
-AfficherPlateau(plateau);
-Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
-//Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
-//AfficherPlateau(plateau);
-//PouvoirBlue(ref positionYIR, ref positionXIR);
-
-int positionXOwen = 0;
-int positionYOwen = 0;
-int positionXIR = 0;
-int positionYIR = 0;
-int positionXMaisie = 0;
-int positionYMaisie = 0;
-int positionYBlue = 0;
-int positionXBlue = 0;
-
-string[,] CréerPlateau(int dim1,int dim2) 
-{
-    string[,] plateau = new string[dim1,dim2];	            
-
-    for (int i = 0 ; i < plateau.GetLength(0) ; i++)	//Initialisation du plateau vide
-    {
-	    for (int j = 0 ; j < plateau.GetLength(1) ; j++)
+        for (int j = 0; j < plateau.GetLength(1); j++)
         {
-            plateau[i,j] = "⬜";
+            plateau[i, j] = "⬜";
         }
     }
-                                                    //Placement aléatoire des joueurs
-    PlacerAléatoire("🟩",plateau); //Owen         
-    PlacerAléatoire("🟦",plateau); //Blue
-    PlacerAléatoire("🟪",plateau); //Maisie
-    PlacerAléatoire("🟥",plateau); //IR
-    
-    for (int i = 0 ; i < 2 ; i++ )   //Grenades spéciales placées aléatoirement, changer le i<2 si on en veut plus !
+    //Placement aléatoire des joueurs
+    PlacerAléatoire("🟩", plateau); //Owen         
+    PlacerAléatoire("🟦", plateau); //Blue
+    PlacerAléatoire("🟪", plateau); //Maisie
+    PlacerAléatoire("🟥", plateau); //IR
+
+    for (int i = 0; i < 2; i++)   //Grenades spéciales placées aléatoirement, changer le i<2 si on en veut plus !
     {
-        PlacerAléatoire("🧨",plateau);  //"💥" symbole à utiliser pour les trous de grenade 
+        PlacerAléatoire("🧨", plateau);  //"💥" symbole à utiliser pour les trous de grenade 
     }
 
     return plateau;
 }
 
-string [,] PlacerAléatoire(string perso, string[,] plateau)     
+string[,] PlacerAléatoire(string perso, string[,] plateau)
 {
     int x;
     int y;
@@ -350,9 +308,9 @@ string [,] PlacerAléatoire(string perso, string[,] plateau)
         x = TirerNbAléatoire(plateau.GetLength(1));     // Tirer un x (abscisse) aléatoire entre 0 et le nombre de colonnes du plateau
         y = TirerNbAléatoire(plateau.GetLength(0));     // Tirer un y (ordonné) aléatoire entre 0 et le nombre de lignes du plateau
     }
-    while (plateau[y,x]!="⬜");
+    while (plateau[y, x] != "⬜");
 
-    plateau[y,x] = perso;
+    plateau[y, x] = perso;
     return plateau;
 }
 
@@ -363,11 +321,11 @@ void AfficherPlateau(string[,] plateau)      //Afficher le plateau
     plateau[positionYBlue, positionXBlue] = "🟦";
     plateau[positionYIR, positionXIR] = "🟥";
 
-       for (int i = 0 ; i < plateau.GetLength(0) ; i++)	
+    for (int i = 0; i < plateau.GetLength(0); i++)
     {
-	    for (int j = 0 ; j < plateau.GetLength(1) ; j++)
+        for (int j = 0; j < plateau.GetLength(1); j++)
         {
-            Console.Write(plateau[i,j]);
+            Console.Write(plateau[i, j]);
         }
         Console.WriteLine();
     }
@@ -376,46 +334,51 @@ void AfficherPlateau(string[,] plateau)      //Afficher le plateau
 int TirerNbAléatoire(int max)   //Tirer un nombre aléatoire
 {
     Random rng = new Random();
-    int nb = rng.Next(0,max);   //max : borne supérieure en paramètre
-    return(nb);
+    int nb = rng.Next(0, max);   //max : borne supérieure en paramètre
+    return (nb);
 }
 
 void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXMaisie, ref int positionYMaisie, ref int positionXBlue, ref int positionYBlue)
 {
-    for (int i = 0; i <plateau.GetLength(0) ; i++)	
+    for (int i = 0; i < plateau.GetLength(0); i++)
     {
-        for (int j = 0 ; j < plateau.GetLength(1) ; j++)
+        for (int j = 0; j < plateau.GetLength(1); j++)
         {
-            if (plateau[i,j] == "🟩")
+            if (plateau[i, j] == "🟩")
             {
                 positionYOwen = i;
                 positionXOwen = j;
             }
-             if (plateau[i,j] == "🟪")
+            if (plateau[i, j] == "🟪")
             {
                 positionYMaisie = i;
                 positionXMaisie = j;
             }
-             if (plateau[i,j] == "🟦")
+            if (plateau[i, j] == "🟦")
             {
                 positionYBlue = i;
                 positionXBlue = j;
             }
-             if (plateau[i,j] == "🟥")
+            if (plateau[i, j] == "🟥")
             {
                 positionYIR = i;
                 positionXIR = j;
-            }   
+            }
         }
-    }  
+    }
 }
 
 //Tests à supprimer
-string[,] plateau = CréerPlateau(15,15);
 
 RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
 
 AfficherPlateau(plateau);
 
 Console.WriteLine($"Position Owen : y : {positionYOwen}, x : {positionXOwen}");
+
+AfficherPlateau(plateau);
+Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
+//Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
+//AfficherPlateau(plateau);
+//PouvoirBlue(ref positionYIR, ref positionXIR);
 
