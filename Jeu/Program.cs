@@ -33,10 +33,12 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
     int randomY = 0;
     int randomX = 0;
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
-    if (Console.ReadLine() == "Oui")
+    string reponse = Console.ReadLine()!;
+    if (reponse == "Oui")
     {
         Console.WriteLine("Lancer une grenade spéciale ou normale?");
-        if (Console.ReadLine() == "spéciale")
+        string type = Console.ReadLine()!;
+        if ((type == "spéciale") || (type == "Spéciale"))
         {
             if (nbGrenadeSpe > 0)
             {
@@ -46,6 +48,15 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                 coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
                 Console.WriteLine("Entrez le numéro de colonne :");
                 coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
+                {
+                    Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
+                    Console.WriteLine("Sélectionnez où lancer la grenade:");
+                    Console.WriteLine("Entrez le numéro de ligne :");
+                    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
+                    Console.WriteLine("Entrez le numéro de colonne :");
+                    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                }
                 while ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
                 {
                     Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
@@ -76,7 +87,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                     else // sinon on crée une crevasse
                     {
                         plateau[coorYGrenade, coorXGrenade] = "💥";
-                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX >= plateau.GetLength(1) - 1) || (coorYGrenade + randomY >= plateau.GetLength(0) - 1) || (coorXGrenade + randomX < 0) || (coorYGrenade + randomY < 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX <= plateau.GetLength(1) - 1) || (coorYGrenade + randomY <= plateau.GetLength(0) - 1) || (coorXGrenade + randomX > 0) || (coorYGrenade + randomY > 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit et prendre en compte les bordures
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
@@ -98,7 +109,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
-                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenadeSpe + randomX >= plateau.GetLength(1) - 1) || (coorYGrenadeSpe + randomY >= plateau.GetLength(0) - 1) || (coorXGrenadeSpe + randomX < 0) || (coorYGrenadeSpe + randomY < 0))); // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenadeSpe + randomX <= plateau.GetLength(1) - 1) || (coorYGrenadeSpe + randomY <= plateau.GetLength(0) - 1) || (coorXGrenadeSpe + randomX > 0) || (coorYGrenadeSpe + randomY > 0))); // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
@@ -124,7 +135,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
             }
         }
 
-        else if (Console.ReadLine() == "normale")
+        else if ((type == "normale") || (type == "Normale"))
         {
             if (nbGrenade > 0)
             {
@@ -134,6 +145,15 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                 coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
                 Console.WriteLine("Entrez le numéro de colonne :");
                 coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
+                {
+                    Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
+                    Console.WriteLine("Sélectionnez où lancer la grenade:");
+                    Console.WriteLine("Entrez le numéro de ligne :");
+                    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
+                    Console.WriteLine("Entrez le numéro de colonne :");
+                    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                }
                 while ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
                 {
                     Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
@@ -160,7 +180,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                     else // sinon on crée une crevasse
                     {
                         plateau[coorYGrenade, coorXGrenade] = "💥";
-                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX >= plateau.GetLength(1) - 1) || (coorYGrenade + randomY >= plateau.GetLength(0) - 1) || (coorXGrenade + randomX < 0) || (coorYGrenade + randomY < 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX <= plateau.GetLength(1) - 1) || (coorYGrenade + randomY <= plateau.GetLength(0) - 1) || (coorXGrenade + randomX > 0) || (coorYGrenade + randomY > 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
@@ -182,7 +202,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                 Console.WriteLine("Vous n'avez plus de grenades, bonne chance!");
         }
     }
-    else if (Console.ReadLine() == "Non")
+    else if (reponse == "Non")
     {
         Console.WriteLine("Owen ne lance pas de grenade.");
     }
@@ -270,12 +290,16 @@ void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXO
         Console.WriteLine("Bien joué ! Personne n'a été croqué.e ");
 }
 
+//Recuperer grenade
+
 void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 {
     if (plateau[positionYOwen, positionXOwen] == "🧨")
         nbGrenadeSpe += 1;
     plateau[positionYOwen, positionXOwen] = "🟩";
 }
+
+//Création du plateau
 
 string[,] CréerPlateau(int dim1, int dim2)
 {
@@ -373,13 +397,119 @@ void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int position
     }
 }
 
+
+// Maisie et l'Indominus se déplacent de manière aléatoire d'une case à la fois
+
+void DeplacementAleatoire(string personnage, ref int x, ref int y)
+{
+    plateau[y, x] = "⬜"; //Réinitialise le plateau
+    Random rng = new Random();
+    int nbrCaseX = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
+    int nbrCaseY = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
+    while (nbrCaseX == 0 && nbrCaseY == 0) // Eviter que le déplacement soit nul (les deux coordonnées restent les mêmes)
+    {
+        nbrCaseX = rng.Next(-1, 2);
+        nbrCaseY = rng.Next(-1, 2);
+    }
+    x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
+    y = y + nbrCaseY;
+    while (x < 0 || y < 0) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    {
+        nbrCaseX = rng.Next(-1, 2);
+        nbrCaseY = rng.Next(-1, 2);
+        x = x + nbrCaseX;
+        y = y + nbrCaseY;
+    }
+    plateau[y,x] = personnage; // Affiche la nouvelle position du personnage 
+
+}
+
+
+
+// Si l'Indominus est énervée elle peut se déplacer de 2 cases à la fois
+
+void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
+{
+    plateau[y, x] = "⬜"; //Réinitialise le plateau
+
+    Random rng = new Random();
+    int nbrCaseX = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
+    int nbrCaseY = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée y
+
+    while (nbrCaseX == 0 && nbrCaseY == 0) // Eviter que le déplacement soit nul (les deux coordonnées restent les mêmes)
+    {
+        nbrCaseX = rng.Next(-2, 3);
+        nbrCaseY = rng.Next(-2, 3);
+    }
+    int nouvelleCoorX = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
+    int nouvelleCoorY = y + nbrCaseY;
+
+    while (nouvelleCoorX < 0 || nouvelleCoorY < 0) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    {
+        nbrCaseX = rng.Next(-2, 3);
+        nbrCaseY = rng.Next(-2, 3);
+        nouvelleCoorX = x + nbrCaseX;
+        nouvelleCoorY = y + nbrCaseY;
+    }
+    plateau[nouvelleCoorY, nouvelleCoorX] = personnage; // Affiche la nouvelle position de l'Indominus
+
+}
+
+
+
+// Déplace le personnage d'une case à l'aide des flèches du clavier
+
+void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
+{
+    Console.WriteLine($"Presser une flèche du clavier pour déplacer {nom}");
+
+    plateau[y, x] = "⬜"; // Réinitialise le plateau
+
+    ConsoleKeyInfo key = Console.ReadKey(intercept: true);
+    if (key.Key == ConsoleKey.LeftArrow && x > 0) // Flèche gauche
+    {
+        x -= 1;
+    }
+    else if (key.Key == ConsoleKey.RightArrow && x < Console.WindowWidth - 1) // Flèche droite
+    {
+        x += 1;
+    }
+    else if (key.Key == ConsoleKey.UpArrow && y > 0) // Flèche haut
+    {
+        y -= 1;
+    }
+    else if (key.Key == ConsoleKey.DownArrow && y < Console.WindowHeight - 1) // Flèche bas
+    {
+        y += 1;
+    }
+
+    plateau[y, x] = personnage; // Affiche le personnage sur sa nouvelle position
+
+}
+
 //Tests à supprimer
 
 RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
 
 AfficherPlateau(plateau);
 
+if (enervement == false)
+{
+    DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
+}
+else
+{
+    DeplacementAleatoireEnervee("🟥", ref positionXIR, ref positionYIR);
+}
+AfficherPlateau(plateau);
+
 Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
+
+DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
+AfficherPlateau(plateau);
+
+DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
+AfficherPlateau(plateau);
 
 if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
 {
@@ -387,9 +517,13 @@ if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
     AfficherPlateau(plateau);
 }
 
+DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
+AfficherPlateau(plateau);
+
+RecupererGrenadeSpe(positionYOwen, positionXOwen);
+
 Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
 
-AfficherPlateau(plateau);
 
 
 
