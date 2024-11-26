@@ -33,11 +33,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
     int randomY = 0;
     int randomX = 0;
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
-    string reponse = Console.ReadLine();
+    string reponse = Console.ReadLine()!;
     if (reponse == "Oui")
     {
         Console.WriteLine("Lancer une grenade spéciale ou normale?");
-        string type = Console.ReadLine();
+        string type = Console.ReadLine()!;
         if ((type == "spéciale") || (type == "Spéciale"))
         {
             if (nbGrenadeSpe > 0)
@@ -399,70 +399,70 @@ void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int position
 
 // Maisie et l'Indominus se déplacent de manière aléatoire d'une case à la fois
 
-void DeplacementAleatoire(string personnage, ref int x, ref int y) 
+void DeplacementAleatoire(string personnage, ref int x, ref int y)
 {
-    plateau[y,x] = "⬜"; //Réinitialise le plateau
+    plateau[y, x] = "⬜"; //Réinitialise le plateau
     Random rng = new Random();
-    int nbrCaseX = rng.Next(-1,2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
-    int nbrCaseY = rng.Next(-1,2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
+    int nbrCaseX = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
+    int nbrCaseY = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
     while (nbrCaseX == 0 && nbrCaseY == 0) // Eviter que le déplacement soit nul (les deux coordonnées restent les mêmes)
     {
-        nbrCaseX = rng.Next(-1,2);
-        nbrCaseY = rng.Next(-1,2);
+        nbrCaseX = rng.Next(-1, 2);
+        nbrCaseY = rng.Next(-1, 2);
     }
     int nouvelleCoorX = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
     int nouvelleCoorY = y + nbrCaseY;
     while (nouvelleCoorX < 0 || nouvelleCoorY < 0) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
-        nbrCaseX = rng.Next(-1,2);
-        nbrCaseY = rng.Next(-1,2);
-        nouvelleCoorX = x + nbrCaseX; 
+        nbrCaseX = rng.Next(-1, 2);
+        nbrCaseY = rng.Next(-1, 2);
+        nouvelleCoorX = x + nbrCaseX;
         nouvelleCoorY = y + nbrCaseY;
-    } 
-    plateau [nouvelleCoorY,nouvelleCoorX] = personnage; // Affiche la nouvelle position du personnage 
-    
+    }
+    plateau[nouvelleCoorY, nouvelleCoorX] = personnage; // Affiche la nouvelle position du personnage 
+
 }
 
 
 
 // Si l'Indominus est énervée elle peut se déplacer de 2 cases à la fois
 
-void DeplacementAleatoireEnervee (string personnage, ref int x, ref int y) 
+void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
 {
-    plateau[y,x] = "⬜"; //Réinitialise le plateau
-    
+    plateau[y, x] = "⬜"; //Réinitialise le plateau
+
     Random rng = new Random();
-    int nbrCaseX = rng.Next(-2,3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
-    int nbrCaseY = rng.Next(-2,3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée y
-    
+    int nbrCaseX = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
+    int nbrCaseY = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée y
+
     while (nbrCaseX == 0 && nbrCaseY == 0) // Eviter que le déplacement soit nul (les deux coordonnées restent les mêmes)
     {
-        nbrCaseX = rng.Next(-2,3);
-        nbrCaseY = rng.Next(-2,3);
+        nbrCaseX = rng.Next(-2, 3);
+        nbrCaseY = rng.Next(-2, 3);
     }
     int nouvelleCoorX = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
     int nouvelleCoorY = y + nbrCaseY;
-    
+
     while (nouvelleCoorX < 0 || nouvelleCoorY < 0) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
-        nbrCaseX = rng.Next(-2,3);
-        nbrCaseY = rng.Next(-2,3);
-        nouvelleCoorX = x + nbrCaseX; 
+        nbrCaseX = rng.Next(-2, 3);
+        nbrCaseY = rng.Next(-2, 3);
+        nouvelleCoorX = x + nbrCaseX;
         nouvelleCoorY = y + nbrCaseY;
     }
-    plateau [nouvelleCoorY,nouvelleCoorX] = personnage; // Affiche la nouvelle position de l'Indominus
-    
+    plateau[nouvelleCoorY, nouvelleCoorX] = personnage; // Affiche la nouvelle position de l'Indominus
+
 }
 
 
 
 // Déplace le personnage d'une case à l'aide des flèches du clavier
 
-void DeplacementClavier(string personnage, ref int x, ref int y)
+void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 {
-    Console.WriteLine("Presser une fléches du clavier pour déplacer le personnage");
-    
-    plateau[y,x] = "⬜"; // Réinitialise le plateau
+    Console.WriteLine($"Presser une flèche du clavier pour déplacer {nom}");
+
+    plateau[y, x] = "⬜"; // Réinitialise le plateau
 
     ConsoleKeyInfo key = Console.ReadKey(intercept: true);
     if (key.Key == ConsoleKey.LeftArrow && x > 0) // Flèche gauche
@@ -481,9 +481,9 @@ void DeplacementClavier(string personnage, ref int x, ref int y)
     {
         y += 1;
     }
-    
-    plateau[y,x] = personnage; // Affiche le personnage sur sa nouvelle position
-   
+
+    plateau[y, x] = personnage; // Affiche le personnage sur sa nouvelle position
+
 }
 
 //Tests à supprimer
@@ -497,7 +497,7 @@ if (enervement == false)
     DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
 }
 else
-{ 
+{
     DeplacementAleatoireEnervee("🟥", ref positionXIR, ref positionYIR);
 }
 AfficherPlateau(plateau);
@@ -507,7 +507,7 @@ Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie,
 DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
 AfficherPlateau(plateau);
 
-DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue);
+DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
 AfficherPlateau(plateau);
 
 if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
@@ -516,14 +516,13 @@ if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
     AfficherPlateau(plateau);
 }
 
-DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen);
+DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
 AfficherPlateau(plateau);
 
 RecupererGrenadeSpe(positionYOwen, positionXOwen);
 
 Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
 
-AfficherPlateau(plateau);
 
 
 
