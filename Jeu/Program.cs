@@ -89,3 +89,5 @@ void DeplacementClavier(string personnage, int x, int y)
 DeplacementClavier(5,6);
 
 
+  
+}
