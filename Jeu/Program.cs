@@ -290,12 +290,16 @@ void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXO
         Console.WriteLine("Bien joué ! Personne n'a été croqué.e ");
 }
 
+//Recuperer grenade
+
 void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 {
     if (plateau[positionYOwen, positionXOwen] == "🧨")
         nbGrenadeSpe += 1;
     plateau[positionYOwen, positionXOwen] = "🟩";
 }
+
+//Création du plateau
 
 string[,] CréerPlateau(int dim1, int dim2)
 {
@@ -392,34 +396,12 @@ void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int position
     }
 }
 
-//Tests à supprimer
 
-RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
-
-AfficherPlateau(plateau);
-
-Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
-
-if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
-{
-    PouvoirBlue(ref positionYIR, ref positionXIR);
-    AfficherPlateau(plateau);
-}
-
-Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
-
-AfficherPlateau(plateau);
-
-
-
-//Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
-//AfficherPlateau(plateau);
-//PouvoirBlue(ref positionYIR, ref positionXIR);
 // Maisie et l'Indominus se déplacent de manière aléatoire d'une case à la fois
 
-void DeplacementAleatoire(string personnage, int x, int y) 
+void DeplacementAleatoire(string personnage, ref int x, ref int y) 
 {
-    plateau[x,y] = plateau[⬜]; //Réinitialise le plateau
+    plateau[y,x] = "⬜"; //Réinitialise le plateau
     Random rng = new Random();
     int nbrCaseX = rng.Next(-1,2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
     int nbrCaseY = rng.Next(-1,2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
@@ -437,17 +419,17 @@ void DeplacementAleatoire(string personnage, int x, int y)
         nouvelleCoorX = x + nbrCaseX; 
         nouvelleCoorY = y + nbrCaseY;
     } 
-    plateau [nouvelleCoorX,nouvelleCoorY] = plateau [personnage]; // Affiche la nouvelle position du personnage 
+    plateau [nouvelleCoorY,nouvelleCoorX] = personnage; // Affiche la nouvelle position du personnage 
     
 }
-DeplacementAleatoire(6,9);
+
 
 
 // Si l'Indominus est énervée elle peut se déplacer de 2 cases à la fois
 
-void DeplacementAleatoireEnervee (string personnage, int x, int y) 
+void DeplacementAleatoireEnervee (string personnage, ref int x, ref int y) 
 {
-    plateau[x,y] = plateau[⬜]; //Réinitialise le plateau
+    plateau[y,x] = "⬜"; //Réinitialise le plateau
     
     Random rng = new Random();
     int nbrCaseX = rng.Next(-2,3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
@@ -468,19 +450,19 @@ void DeplacementAleatoireEnervee (string personnage, int x, int y)
         nouvelleCoorX = x + nbrCaseX; 
         nouvelleCoorY = y + nbrCaseY;
     }
-    plateau [nouvelleCoorX,nouvelleCoorY] = plateau [personnage]; // Affiche la nouvelle position de l'Indominus
-    Console.WriteLine($"{nouvelleCoorX} {nouvelleCoorY}");
+    plateau [nouvelleCoorY,nouvelleCoorX] = personnage; // Affiche la nouvelle position de l'Indominus
+    
 }
-DeplacementAleatoireEnervee(6,9);
+
 
 
 // Déplace le personnage d'une case à l'aide des flèches du clavier
 
-void DeplacementClavier(string personnage, int x, int y)
+void DeplacementClavier(string personnage, ref int x, ref int y)
 {
     Console.WriteLine("Presser une fléches du clavier pour déplacer le personnage");
     
-    plateau[x,y] = plateau[⬜]; // Réinitialise le plateau
+    plateau[y,x] = "⬜"; // Réinitialise le plateau
 
     ConsoleKeyInfo key = Console.ReadKey(intercept: true);
     if (key.Key == ConsoleKey.LeftArrow && x > 0) // Flèche gauche
@@ -500,9 +482,52 @@ void DeplacementClavier(string personnage, int x, int y)
         y += 1;
     }
     
-    plateau[x,y] = plateau[personnage]; // Affiche le personnage sur sa nouvelle position
-    Console.WriteLine($"{x} {y}");
+    plateau[y,x] = personnage; // Affiche le personnage sur sa nouvelle position
+   
 }
-DeplacementClavier(5,6);
 
+//Tests à supprimer
+
+RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+
+AfficherPlateau(plateau);
+
+if (enervement == false)
+{
+    DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
+}
+else
+{ 
+    DeplacementAleatoireEnervee("🟥", ref positionXIR, ref positionYIR);
+}
+AfficherPlateau(plateau);
+
+Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
+
+DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
+AfficherPlateau(plateau);
+
+DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue);
+AfficherPlateau(plateau);
+
+if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
+{
+    PouvoirBlue(ref positionYIR, ref positionXIR);
+    AfficherPlateau(plateau);
+}
+
+DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen);
+AfficherPlateau(plateau);
+
+RecupererGrenadeSpe(positionYOwen, positionXOwen);
+
+Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
+
+AfficherPlateau(plateau);
+
+
+
+//Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
+//AfficherPlateau(plateau);
+//PouvoirBlue(ref positionYIR, ref positionXIR);
 
