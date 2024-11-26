@@ -410,16 +410,16 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
         nbrCaseX = rng.Next(-1, 2);
         nbrCaseY = rng.Next(-1, 2);
     }
-    int nouvelleCoorX = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
-    int nouvelleCoorY = y + nbrCaseY;
-    while (nouvelleCoorX < 0 || nouvelleCoorY < 0) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
+    y = y + nbrCaseY;
+    while (x < 0 || y < 0) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
         nbrCaseX = rng.Next(-1, 2);
         nbrCaseY = rng.Next(-1, 2);
-        nouvelleCoorX = x + nbrCaseX;
-        nouvelleCoorY = y + nbrCaseY;
+        x = x + nbrCaseX;
+        y = y + nbrCaseY;
     }
-    plateau[nouvelleCoorY, nouvelleCoorX] = personnage; // Affiche la nouvelle position du personnage 
+    plateau[y,x] = personnage; // Affiche la nouvelle position du personnage 
 
 }
 
