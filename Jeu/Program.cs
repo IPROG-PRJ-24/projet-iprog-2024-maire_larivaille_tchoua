@@ -303,6 +303,7 @@ void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 
 string[,] CréerPlateau(int dim1, int dim2)
 {
+    
     string[,] plateau = new string[dim1, dim2];
 
     for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
@@ -412,7 +413,7 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
     }
     x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
     y = y + nbrCaseY;
-    while (x < 0 || y < 0) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    while (x < 0 || y < 0 ||  x > (plateau.GetLength(1)-1) || y > (plateau.GetLength(0)-1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
         nbrCaseX = rng.Next(-1, 2);
         nbrCaseY = rng.Next(-1, 2);
@@ -440,17 +441,17 @@ void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
         nbrCaseX = rng.Next(-2, 3);
         nbrCaseY = rng.Next(-2, 3);
     }
-    int nouvelleCoorX = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
-    int nouvelleCoorY = y + nbrCaseY;
+    x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
+    y = y + nbrCaseY;
 
-    while (nouvelleCoorX < 0 || nouvelleCoorY < 0) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    while (x < 0 || y < 0 ||  x > (plateau.GetLength(1)-1) || y > (plateau.GetLength(0)-1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
         nbrCaseX = rng.Next(-2, 3);
         nbrCaseY = rng.Next(-2, 3);
-        nouvelleCoorX = x + nbrCaseX;
-        nouvelleCoorY = y + nbrCaseY;
+        x = x + nbrCaseX;
+        y = y + nbrCaseY;
     }
-    plateau[nouvelleCoorY, nouvelleCoorX] = personnage; // Affiche la nouvelle position de l'Indominus
+    plateau[y,x] = personnage; // Affiche la nouvelle position de l'Indominus
 
 }
 
@@ -490,7 +491,7 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 
 RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
 
-AfficherPlateau(plateau);
+//AfficherPlateau(plateau);
 
 if (enervement == false)
 {
@@ -523,30 +524,10 @@ RecupererGrenadeSpe(positionYOwen, positionXOwen);
 
 Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
 
+
+
+
 //Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
 //AfficherPlateau(plateau);
 //PouvoirBlue(ref positionYIR, ref positionXIR);
-
-// Vérification Enclos
-void Enclos(string personnage, ref int x, ref int y)
-{
-    while()
-    int xinit = x;
-    int yinit = y;
-
-    while(x,y != nx, ny)
-    {
-        if( plateau[y+1,x] == "💥" )
-            x -= 1;
-        if( plateau[y,x-1] == "💥") 
-            y -= 1;
-        if( plateau[y-1,x] == "💥")
-            x += 1;
-        if( plateau[y,x+1] == "💥")
-            y += 1;
-    }
-    Console.WriteLine($"L'enclos est fermé");
-}
-
-
 
