@@ -7,11 +7,50 @@ int positionYMaisie = 0;
 int positionXMaisie = 0;
 int positionYBlue = 0;
 int positionXBlue = 0;
-Console.WriteLine("Déterminez la hauteur du plateau :");
-int hauteurPlateau = Convert.ToInt32(Console.ReadLine()!);
-Console.WriteLine("Déterminez la longueur du plateau :");
-int longueurPlateau = Convert.ToInt32(Console.ReadLine()!);
+
+//Affichage des règles
+
+//Légende 
+Console.WriteLine("=== Légende ===");
+Console.WriteLine("🟩 : Owen");
+Console.WriteLine("🟪 : Maisie");
+Console.WriteLine("🟦 : Blue");
+Console.WriteLine("🟥 : IR");
+Console.WriteLine("🧨 : Grenade");
+Console.WriteLine("💥 : Crevasse");
+Console.WriteLine("================");
+
+//Demander taille tableau 
+int hauteurPlateau;
+int longueurPlateau;
+bool saisieValide;
+
+Console.Write("Déterminez la hauteur du plateau : ");
+do
+{
+    string saisie = Console.ReadLine()!;
+    saisieValide = int.TryParse(saisie, out hauteurPlateau);
+
+    if (!saisieValide)
+    {
+        Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
+    }
+} while (!saisieValide);
+
+Console.Write("Déterminez la longueur du plateau : ");
+do
+{
+    string saisie = Console.ReadLine()!;
+    saisieValide = int.TryParse(saisie, out longueurPlateau);
+
+    if (!saisieValide)
+    {
+        Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
+    }
+} while (!saisieValide);
+
 string[,] plateau = CréerPlateau(hauteurPlateau, longueurPlateau);
+
 int nbGrenade = plateau.GetLength(1);
 int nbGrenadeSpe = 1;
 int pdvMaisie = 100;
@@ -19,11 +58,12 @@ int pdvBlue = 100;
 int pdvIR = 10 * nbGrenade;
 int coorYGrenadeSpe;
 int coorXGrenadeSpe;
-string nomMaisie = "Maisie";
+string nomMaisie = "Maisie";    //à supp ?
 string nomBlue = "Blue";
 string nomOwen = "Owen";
 Random rng = new Random();
 bool enervement = false;
+
 
 // Lancer ou non d'une grenade, spéciale ou non
 void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int pdvBlue, int pdvMaisie)
@@ -34,11 +74,12 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
     int randomX = 0;
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
     string reponse = Console.ReadLine()!;
-    if (reponse == "Oui")
+    if (reponse == "Oui"||reponse == "oui")
     {
-        Console.WriteLine("Lancer une grenade spéciale ou normale?");
+        Console.WriteLine("Tapez 'S' pour lancer une grenade spéciale ou 'N' pour une grenade normale ?");
         string type = Console.ReadLine()!;
-        if ((type == "spéciale") || (type == "Spéciale"))
+
+        if (type == "S" || type == "s")
         {
             if (nbGrenadeSpe > 0)
             {
@@ -131,11 +172,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
             else
             {
                 Console.WriteLine("Vous n'avez plus de grenade spéciale");
-                Console.WriteLine("Voulez vous lancer une grenade normale? (si oui, répondre normale)");
+                Console.WriteLine("Voulez vous lancer une grenade normale? (si oui, répondre 'N')");
             }
         }
 
-        else if ((type == "normale") || (type == "Normale"))
+        else if ((type == "N") || (type == "n"))
         {
             if (nbGrenade > 0)
             {
@@ -202,12 +243,12 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                 Console.WriteLine("Vous n'avez plus de grenades, bonne chance!");
         }
     }
-    else if (reponse == "Non")
+    else if (reponse == "Non"||reponse == "non")
     {
         Console.WriteLine("Owen ne lance pas de grenade.");
     }
     AfficherPlateau(plateau);
-    Console.WriteLine($"Il vous reste {nbGrenade} grenades et {nbGrenadeSpe} grenades spéciales.");
+    Console.WriteLine($"Il vous reste {nbGrenade} grenade(s) et {nbGrenadeSpe} grenade(s) spéciale(s).");
 }
 
 
@@ -349,12 +390,21 @@ void AfficherPlateau(string[,] plateau)      //Afficher le plateau
     plateau[positionYMaisie, positionXMaisie] = "🟪";
     plateau[positionYBlue, positionXBlue] = "🟦";
     plateau[positionYIR, positionXIR] = "🟥";
+    
+    Console.Write("  ");
+    for(int t = 0; t< plateau.GetLength(0)+2; t++)
+    {
+        Console.Write($"{t} ");
+    }
 
+    Console.WriteLine();
     for (int i = 0; i < plateau.GetLength(0); i++)
     {
+        Console.Write(i);
         for (int j = 0; j < plateau.GetLength(1); j++)
         {
             Console.Write(plateau[i, j]);
+            
         }
         Console.WriteLine();
     }
