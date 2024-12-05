@@ -316,15 +316,6 @@ void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXO
         Console.WriteLine("Bien joué ! Personne n'a été croqué.e ");
 }
 
-//Recuperer grenade
-
-void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
-{
-    if (plateau[positionYOwen, positionXOwen] == "🧨")
-        nbGrenadeSpe += 1;
-    plateau[positionYOwen, positionXOwen] = "🟩";
-}
-
 //Création du plateau
 
 string[,] CréerPlateau(int dim1, int dim2)
@@ -376,8 +367,22 @@ void AfficherPlateau(string[,] plateau)      //Afficher le plateau
     plateau[positionYBlue, positionXBlue] = "🟦";
     plateau[positionYIR, positionXIR] = "🟥";
 
+    
+    Console.Write("  ");
+    for (int t = 0; t < plateau.GetLength(1); t++)
+    {
+       Console.Write(t+" ");
+
+       if (t == plateau.GetLength(1)-1)
+       {
+        Console.WriteLine();
+       }
+    }
+
     for (int i = 0; i < plateau.GetLength(0); i++)
     {
+       Console.Write(i);
+
         for (int j = 0; j < plateau.GetLength(1); j++)
         {
             Console.Write(plateau[i, j]);
@@ -428,7 +433,7 @@ void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int position
 
 void DeplacementAleatoire(string personnage, ref int x, ref int y)
 {
-    plateau[y, x] = "⬜"; //Réinitialise le plateau
+    plateau[y, x] = "⬜"; //Réinitialise la case du personnage
     Random rng = new Random();
     int nbrCaseX = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
     int nbrCaseY = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
@@ -439,7 +444,7 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
     }
     x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
     y = y + nbrCaseY;
-    while (x < 0 || y < 0 || x > (plateau.GetLength(1) - 1) || y > (plateau.GetLength(0) - 1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    while (x < 0 || y < 0 || x > (plateau.GetLength(1) - 1) || y > (plateau.GetLength(0) - 1) || (plateau[y,x] != "⬜")) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau , ou qu'elle soit sur la case d'un autre joueur
     {
         nbrCaseX = rng.Next(-1, 2);
         nbrCaseY = rng.Next(-1, 2);
@@ -485,33 +490,70 @@ void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
 
 // Déplace le personnage d'une case à l'aide des flèches du clavier
 
+
+
 void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 {
+    int newX = x;
+    int newY = y;
+    bool deplacementValide = false; // Indicateur pour savoir si le déplacement est valide
+
     Console.WriteLine($"Presser une flèche du clavier pour déplacer {nom}");
 
-    plateau[y, x] = "⬜"; // Réinitialise le plateau
+    do
+    {
+        ConsoleKeyInfo key = Console.ReadKey(intercept: true);
 
-    ConsoleKeyInfo key = Console.ReadKey(intercept: true);
-    if (key.Key == ConsoleKey.LeftArrow && x > 0) // Flèche gauche
-    {
-        x -= 1;
-    }
-    else if (key.Key == ConsoleKey.RightArrow && x < Console.WindowWidth - 1) // Flèche droite
-    {
-        x += 1;
-    }
-    else if (key.Key == ConsoleKey.UpArrow && y > 0) // Flèche haut
-    {
-        y -= 1;
-    }
-    else if (key.Key == ConsoleKey.DownArrow && y < Console.WindowHeight - 1) // Flèche bas
-    {
-        y += 1;
-    }
+        // Calcul des nouvelles coordonnées en fonction de la touche pressée
+        if (key.Key == ConsoleKey.LeftArrow && x > 0) // Flèche gauche
+        {
+            newX = x - 1;
+        }
+        else if (key.Key == ConsoleKey.RightArrow && x < Console.WindowWidth - 1) // Flèche droite
+        {
+            newX = x + 1;
+        }
+        else if (key.Key == ConsoleKey.UpArrow && y > 0) // Flèche haut
+        {
+            newY = y - 1;
+        }
+        else if (key.Key == ConsoleKey.DownArrow && y < Console.WindowHeight - 1) // Flèche bas
+        {
+            newY = y + 1;
+        }
 
-    plateau[y, x] = personnage; // Affiche le personnage sur sa nouvelle position
+        if ((plateau[newY, newX] == "🧨") && (personnage == "🟩")) // Si grenade spéciale   //Supprimer le sous-programme grenade spé
+        {
+            nbGrenadeSpe += 1;
+            plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
+            y = newY; // Met à jour les coordonnées après déplacement
+            x = newX;
+            plateau[y, x] = personnage; // Met à jour la position du personnage
+            Console.WriteLine($"Owen a récupéré une grenade spéciale ! Vous avez desormais {nbGrenadeSpe} grenade(s) spéciale(s)");
+            deplacementValide = true; 
+        }
+        else
+        {
+            if (plateau[newY, newX] != "⬜") //Si la case cible n'est pas vide
+            {
+                Console.WriteLine("Déplacement impossible : la case est occupée.");
+                deplacementValide = false; 
+                newX = x; // On reprend les coordonnées initiales
+                newY = y;
+            }
+            else    //Si la case cible est vide
+            {
+                plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
+                y = newY;
+                x = newX;
+                plateau[y, x] = personnage; // Met à jour la position du personnage
+                deplacementValide = true; 
+            }
+        }
 
+    } while (!deplacementValide); // Répéter tant que le déplacement n'est pas valide
 }
+
 
 //Tests à supprimer
 
@@ -536,6 +578,8 @@ AfficherPlateau(plateau);
 
 DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
 AfficherPlateau(plateau);
+DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
+AfficherPlateau(plateau);
 
 if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
 {
@@ -545,8 +589,9 @@ if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
 
 DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
 AfficherPlateau(plateau);
+DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
+AfficherPlateau(plateau);
 
-RecupererGrenadeSpe(positionYOwen, positionXOwen);
 
 Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
 
