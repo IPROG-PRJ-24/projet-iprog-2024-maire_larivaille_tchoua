@@ -28,8 +28,8 @@ bool enervement = false;
 // Lancer ou non d'une grenade, spéciale ou non
 void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int pdvBlue, int pdvMaisie)
 {
-    int coorYGrenade;
-    int coorXGrenade;
+    int coorYGrenade = 900;  // Sera toujours au-delà des limites du plateau
+    int coorXGrenade = 900;    // Sera toujours au-delà des limites du plateau
     int randomY = 0;
     int randomX = 0;
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
@@ -43,28 +43,16 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
             if (nbGrenadeSpe > 0)
             {
                 nbGrenadeSpe -= 1;
-                Console.WriteLine("Sélectionnez où lancer la grenade:");
-                Console.WriteLine("Entrez le numéro de ligne :");
-                coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
-                Console.WriteLine("Entrez le numéro de colonne :");
-                coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
                 {
                     Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
-                    Console.WriteLine("Sélectionnez où lancer la grenade:");
-                    Console.WriteLine("Entrez le numéro de ligne :");
-                    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
-                    Console.WriteLine("Entrez le numéro de colonne :");
-                    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                    SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 }
                 while ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
                 {
                     Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
-                    Console.WriteLine("Sélectionnez où lancer la grenade:");
-                    Console.WriteLine("Entrez le numéro de ligne :");
-                    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
-                    Console.WriteLine("Entrez le numéro de colonne :");
-                    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                    SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 }
                 if ((coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3) || (coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3))
                 {
@@ -140,28 +128,16 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
             if (nbGrenade > 0)
             {
                 nbGrenade -= 1;
-                Console.WriteLine("Sélectionnez où lancer la grenade:");
-                Console.WriteLine("Entrez le numéro de ligne :");
-                coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
-                Console.WriteLine("Entrez le numéro de colonne :");
-                coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
                 {
                     Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
-                    Console.WriteLine("Sélectionnez où lancer la grenade:");
-                    Console.WriteLine("Entrez le numéro de ligne :");
-                    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
-                    Console.WriteLine("Entrez le numéro de colonne :");
-                    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                    SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 }
                 while ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
                 {
                     Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
-                    Console.WriteLine("Sélectionnez où lancer la grenade:");
-                    Console.WriteLine("Entrez le numéro de ligne :");
-                    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
-                    Console.WriteLine("Entrez le numéro de colonne :");
-                    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+                    SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 }
                 if ((coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3) || (coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3))
                 {
@@ -210,6 +186,15 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
     Console.WriteLine($"Il vous reste {nbGrenade} grenades et {nbGrenadeSpe} grenades spéciales.");
 }
 
+//Entrer les coordonnées de la Grenade
+void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
+{
+    Console.WriteLine("Sélectionnez où lancer la grenade:");
+    Console.WriteLine("Entrez le numéro de ligne :");
+    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
+    Console.WriteLine("Entrez le numéro de colonne :");
+    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+}
 
 //Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
 void SystèmePV(int pV, string nom, string owen)
@@ -303,7 +288,7 @@ void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 
 string[,] CréerPlateau(int dim1, int dim2)
 {
-    
+
     string[,] plateau = new string[dim1, dim2];
 
     for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
@@ -413,14 +398,14 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
     }
     x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
     y = y + nbrCaseY;
-    while (x < 0 || y < 0 ||  x > (plateau.GetLength(1)-1) || y > (plateau.GetLength(0)-1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    while (x < 0 || y < 0 || x > (plateau.GetLength(1) - 1) || y > (plateau.GetLength(0) - 1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
         nbrCaseX = rng.Next(-1, 2);
         nbrCaseY = rng.Next(-1, 2);
         x = x + nbrCaseX;
         y = y + nbrCaseY;
     }
-    plateau[y,x] = personnage; // Affiche la nouvelle position du personnage 
+    plateau[y, x] = personnage; // Affiche la nouvelle position du personnage 
 
 }
 
@@ -444,14 +429,14 @@ void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
     x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
     y = y + nbrCaseY;
 
-    while (x < 0 || y < 0 ||  x > (plateau.GetLength(1)-1) || y > (plateau.GetLength(0)-1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    while (x < 0 || y < 0 || x > (plateau.GetLength(1) - 1) || y > (plateau.GetLength(0) - 1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
         nbrCaseX = rng.Next(-2, 3);
         nbrCaseY = rng.Next(-2, 3);
         x = x + nbrCaseX;
         y = y + nbrCaseY;
     }
-    plateau[y,x] = personnage; // Affiche la nouvelle position de l'Indominus
+    plateau[y, x] = personnage; // Affiche la nouvelle position de l'Indominus
 
 }
 
