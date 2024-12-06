@@ -11,6 +11,7 @@ int positionXBlue = 0;
 //Affichage des règles
 
 //Légende 
+
 Console.WriteLine("=== Légende ===");
 Console.WriteLine("🟩 : Owen");
 Console.WriteLine("🟪 : Maisie");
@@ -66,7 +67,7 @@ bool enervement = false;
 
 
 // Lancer ou non d'une grenade, spéciale ou non
-void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int pdvBlue, int pdvMaisie, ref bool finGrenade)
+void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int pdvBlue, int pdvMaisie, ref bool finGrenade, ref bool enervement)
 {
     
     int coorYGrenade;
@@ -140,11 +141,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                         coorXGrenadeSpe = coorXGrenade + randomX;
                         if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == "🟦")
                         {
-                            SystèmePV(pdvBlue, nomBlue, nomOwen, ref finPv);
+                            SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == "🟪")
                         {
-                            SystèmePV(pdvMaisie, nomMaisie, nomOwen, ref finPv);
+                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
                             plateau[coorYGrenadeSpe, coorXGrenadeSpe] = "💥";
@@ -160,11 +161,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                         }
                         if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == "🟦")
                         {
-                            SystèmePV(pdvBlue, nomBlue, nomOwen, ref finPv);
+                            SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == "🟪")
                         {
-                            SystèmePV(pdvMaisie, nomMaisie, nomOwen, ref finPv);
+                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
                         plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] = "💥";
                     }
@@ -237,11 +238,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                         }
                         if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == "🟦")
                         {
-                            SystèmePV(pdvBlue, nomBlue, nomOwen, ref finPv);
+                            SystèmePV(pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == "🟪")
                         {
-                            SystèmePV(pdvMaisie, nomMaisie, nomOwen, ref finPv);
+                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
                             plateau[coorYGrenade + randomY, coorXGrenade + randomX] = "💥";
@@ -252,7 +253,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
                 Console.WriteLine("Vous n'avez plus de grenades, bonne chance!");
         }
     }
-    else if (reponse == "Non"||reponse == "non")
+    else if (reponse == "Non"|| reponse == "non")
     {
         Console.WriteLine("Owen ne lance pas de grenade.");
     }
@@ -262,13 +263,14 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
 
 
 //Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
-void SystèmePV(int pV, string nom, string owen, ref bool finPv)
+void SystèmePV(int pV, string nom, string owen)
 {
     pV /= 2;
     if (pV == 0)
     {
         Console.WriteLine($"{nom} a été tuée par {owen}. Fin de la partie.");
-        finPv = true;
+       
+        
     }
         
     if (pdvMaisie > 0)
@@ -352,7 +354,10 @@ void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXO
 void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 {
     if (plateau[positionYOwen, positionXOwen] == "🧨")
+    {
         nbGrenadeSpe += 1;
+        Console.WriteLine("Vous avez récupéré une grenade spéciale");
+    }
     plateau[positionYOwen, positionXOwen] = "🟩";
 }
 
@@ -559,65 +564,77 @@ RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR,
 
 //AfficherPlateau(plateau);
 
-//Jouer 
+//Commencer une partie
+
 Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie");
-ConsoleKeyInfo key = Console.ReadKey(intercept: true);
+ConsoleKeyInfo key;
+do
+{
+    key = Console.ReadKey(intercept: true);  // Attente d'une touche sans l'afficher
+
+    if (key.Key != ConsoleKey.Enter)
+    {
+        Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie");
+    }
+}
+while (key.Key != ConsoleKey.Enter);
+
 AfficherPlateau(plateau);
 bool finCroc = false;
 bool finGrenade = false;
-bool finPv = false;
 
-if (key.Key == ConsoleKey.Enter)
+while (finCroc == false && finGrenade == false)
 {
-    while (finCroc == false && finGrenade == false && finPv == false)
+    if (enervement == true)
     {
-        if (enervement == false)
-        {
-            DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
-        }
-        else
-        {
-            DeplacementAleatoireEnervee("🟥", ref positionXIR, ref positionYIR);
-        }
-        AfficherPlateau(plateau);
-
-        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-
-        DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
-        AfficherPlateau(plateau);
-
-        DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
-        AfficherPlateau(plateau);
-
-        if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
-        {
-            PouvoirBlue(ref positionYIR, ref positionXIR);
-            AfficherPlateau(plateau);
-        }
-
-        DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
-        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-        AfficherPlateau(plateau);
-
-        RecupererGrenadeSpe(positionYOwen, positionXOwen);
-
-        Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie, ref finGrenade);
+        DeplacementAleatoireEnervee("🟥", ref positionXIR, ref positionYIR);
+    }
+    else
+    {
+        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
     }
 
-    Console.WriteLine("La partie est finie !");   
+    AfficherPlateau(plateau);
+    Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+    if (finCroc)
+    {
+        break;
+    }
+
+    DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
+    AfficherPlateau(plateau);
+    Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+    if (finCroc)
+    {
+        break;
+    }
+
+    DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
+    AfficherPlateau(plateau);
+
+    if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
+    {
+        PouvoirBlue(ref positionYIR, ref positionXIR);
+        AfficherPlateau(plateau);
+    }
+
+    DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
+    AfficherPlateau(plateau);
+    Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+    if (finCroc)
+    {
+        break;
+    }
+
+    RecupererGrenadeSpe(positionYOwen, positionXOwen);
+
+    Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie, ref finGrenade, ref enervement);
+    if (finGrenade)
+    {
+        break;
+    }
 }
-else
-{
-   Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); 
-}
-
-// 
+Console.WriteLine("La partie est finie !");   
 
 
-
-
-
-//Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
-//AfficherPlateau(plateau);
-//PouvoirBlue(ref positionYIR, ref positionXIR);
 
