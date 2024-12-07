@@ -371,9 +371,9 @@ void AfficherPlateau(string[,] plateau)      //Afficher le plateau
     Console.Write("  ");
     for (int t = 0; t < plateau.GetLength(1); t++)
     {
-       Console.Write(t+" ");
+       Console.Write(t+" ");    //Affiche les numéros des colonnes
 
-       if (t == plateau.GetLength(1)-1)
+       if (t == plateau.GetLength(1)-1) //On revient à la ligne lorsqu'on arrive à la dernière colonne
        {
         Console.WriteLine();
        }
@@ -381,7 +381,7 @@ void AfficherPlateau(string[,] plateau)      //Afficher le plateau
 
     for (int i = 0; i < plateau.GetLength(0); i++)
     {
-       Console.Write(i);
+       Console.Write(i);    //Affiche les numéros de lignes
 
         for (int j = 0; j < plateau.GetLength(1); j++)
         {
@@ -522,6 +522,8 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
             newY = y + 1;
         }
 
+        // Vérification : deplacement valide ou non
+        
         if (newX < 0 || newY < 0 || newX > (plateau.GetLength(1) - 1) || newY > (plateau.GetLength(0) - 1) || (plateau[newY,newX] != "⬜")) //Si les nouvelles coordonnées sont en dehors du plateau ou si la case cible n'est pas vide
         {
             Console.WriteLine("Déplacement impossible : la case est occupée ou hors du plateau. Pressez une autre flèche.");
