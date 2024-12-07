@@ -58,7 +58,7 @@ int pdvBlue = 100;
 int pdvIR = 10 * nbGrenade;
 int coorYGrenadeSpe;
 int coorXGrenadeSpe;
-string nomMaisie = "Maisie";    //à supp ?
+string nomMaisie = "Maisie";    
 string nomBlue = "Blue";
 string nomOwen = "Owen";
 Random rng = new Random();
@@ -451,7 +451,7 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
         x = x + nbrCaseX;
         y = y + nbrCaseY;
     }
-    plateau[y, x] = personnage; // Affiche la nouvelle position du personnage 
+    plateau[y, x] = personnage; // Prend la nouvelle position du personnage 
 
 }
 
@@ -522,37 +522,35 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
             newY = y + 1;
         }
 
-        if ((plateau[newY, newX] == "🧨") && (personnage == "🟩")) // Si grenade spéciale   //Supprimer le sous-programme grenade spé
+        if (newX < 0 || newY < 0 || newX > (plateau.GetLength(1) - 1) || newY > (plateau.GetLength(0) - 1) || (plateau[newY,newX] != "⬜")) //Si les nouvelles coordonnées sont en dehors du plateau ou si la case cible n'est pas vide
+        {
+            Console.WriteLine("Déplacement impossible : la case est occupée ou hors du plateau. Pressez une autre flèche.");
+            deplacementValide = false; 
+            newX = x; // On reprend les coordonnées initiales
+            newY = y;
+        }
+        else if ((plateau[newY, newX] == "🧨") && (personnage == "🟩")) // Si grenade spéciale et Owen (les autres perso ne peuvent pas récup de grenades spéciales)
         {
             nbGrenadeSpe += 1;
             plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
             y = newY; // Met à jour les coordonnées après déplacement
             x = newX;
-            plateau[y, x] = personnage; // Met à jour la position du personnage
-            Console.WriteLine($"Owen a récupéré une grenade spéciale ! Vous avez desormais {nbGrenadeSpe} grenade(s) spéciale(s)");
+            plateau[y, x] = personnage; // Met à jour la position d'Owen
+            Console.WriteLine($"Owen a récupéré une grenade spéciale ! Vous avez désormais {nbGrenadeSpe} grenade(s) spéciale(s)");
             deplacementValide = true; 
         }
-        else
+        else    //Si la case cible est vide
         {
-            if (plateau[newY, newX] != "⬜") //Si la case cible n'est pas vide
-            {
-                Console.WriteLine("Déplacement impossible : la case est occupée.");
-                deplacementValide = false; 
-                newX = x; // On reprend les coordonnées initiales
-                newY = y;
-            }
-            else    //Si la case cible est vide
-            {
-                plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
-                y = newY;
-                x = newX;
-                plateau[y, x] = personnage; // Met à jour la position du personnage
-                deplacementValide = true; 
-            }
+            plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
+            y = newY;
+            x = newX;
+            plateau[y, x] = personnage; // Met à jour la position du personnage
+            deplacementValide = true; 
         }
 
     } while (!deplacementValide); // Répéter tant que le déplacement n'est pas valide
-}
+
+} 
 
 
 //Tests à supprimer
@@ -578,8 +576,6 @@ AfficherPlateau(plateau);
 
 DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
 AfficherPlateau(plateau);
-DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
-AfficherPlateau(plateau);
 
 if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
 {
@@ -589,9 +585,6 @@ if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
 
 DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
 AfficherPlateau(plateau);
-DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
-AfficherPlateau(plateau);
-
 
 Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
 
