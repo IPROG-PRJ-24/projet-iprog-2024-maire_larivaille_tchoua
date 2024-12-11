@@ -8,7 +8,6 @@ int positionXMaisie = 0;
 int positionYBlue = 0;
 int positionXBlue = 0;
 
-//Affichage des règles
 
 //Légende 
 
@@ -21,7 +20,9 @@ Console.WriteLine("🧨 : Grenade");
 Console.WriteLine("💥 : Crevasse");
 Console.WriteLine("================");
 
-//Demander taille tableau 
+
+//Création plateau
+
 int hauteurPlateau;
 int longueurPlateau;
 bool saisieValide;
@@ -50,7 +51,15 @@ do
     }
 } while (!saisieValide);
 
-string[,] plateau = CréerPlateau(hauteurPlateau, longueurPlateau);
+string[,] plateau = new string[hauteurPlateau, longueurPlateau];
+
+for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
+{
+    for (int j = 0; j < plateau.GetLength(1); j++)
+    {
+        plateau[i, j] = "⬜";
+    }
+}
 
 int nbGrenade = plateau.GetLength(1);
 int nbGrenadeSpe = 1;
@@ -67,6 +76,7 @@ bool enervement = false;
 
 
 // Lancer ou non d'une grenade, spéciale ou non
+
 void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int pdvBlue, int pdvMaisie, ref bool finGrenade, ref bool enervement)
 {
     
@@ -263,6 +273,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
 
 
 //Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
+
 void SystèmePV(int pV, string nom, string owen)
 {
     pV /= 2;
@@ -276,6 +287,9 @@ void SystèmePV(int pV, string nom, string owen)
     if (pdvMaisie > 0)
         Console.WriteLine($"{nom} a été touchée par l'impact, attention");
 }
+
+
+//Pouvoir de Blue
 
 void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue et IR en même position
 {
@@ -330,6 +344,9 @@ void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue
     plateau[positionYIR, positionXIR] = "🟥"; // Positionner I aux nouvelles coor
 }
 
+
+//Croquer un personnage
+
 void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXOwen, int positionYMaisie, int positionXMaisie, ref bool finCroc)
 {
     
@@ -363,18 +380,9 @@ void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 
 //Création du plateau
 
-string[,] CréerPlateau(int dim1, int dim2)
+string[,] CréerPlateau()
 {
     
-    string[,] plateau = new string[dim1, dim2];
-
-    for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
-    {
-        for (int j = 0; j < plateau.GetLength(1); j++)
-        {
-            plateau[i, j] = "⬜";
-        }
-    }
     //Placement aléatoire des joueurs
     PlacerAléatoire("🟩", plateau); //Owen         
     PlacerAléatoire("🟦", plateau); //Blue
@@ -388,6 +396,9 @@ string[,] CréerPlateau(int dim1, int dim2)
 
     return plateau;
 }
+
+
+//Placement aléatoire des personnages sur le plateau
 
 string[,] PlacerAléatoire(string perso, string[,] plateau)
 {
@@ -405,7 +416,10 @@ string[,] PlacerAléatoire(string perso, string[,] plateau)
     return plateau;
 }
 
-void AfficherPlateau(string[,] plateau)      //Afficher le plateau
+
+//Afficher le plateau
+
+void AfficherPlateau(string[,] plateau)      
 {
     plateau[positionYOwen, positionXOwen] = "🟩";
     plateau[positionYMaisie, positionXMaisie] = "🟪";
@@ -431,12 +445,18 @@ void AfficherPlateau(string[,] plateau)      //Afficher le plateau
     }
 }
 
-int TirerNbAléatoire(int max)   //Tirer un nombre aléatoire
+
+//Tirer un nombre aléatoire
+
+int TirerNbAléatoire(int max)   
 {
     Random rng = new Random();
     int nb = rng.Next(0, max);   //max : borne supérieure en paramètre
     return (nb);
 }
+
+
+//Récupérer les coordonnées des personnages
 
 void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXMaisie, ref int positionYMaisie, ref int positionXBlue, ref int positionYBlue)
 {
@@ -469,7 +489,7 @@ void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int position
 }
 
 
-// Maisie et l'Indominus se déplacent de manière aléatoire d'une case à la fois
+// Déplacements aléatoires de Maisie et de l'Indominus 
 
 void DeplacementAleatoire(string personnage, ref int x, ref int y)
 {
@@ -496,8 +516,7 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
 }
 
 
-
-// Si l'Indominus est énervée elle peut se déplacer de 2 cases à la fois
+// Déplacements énervé de l'Indominus 
 
 void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
 {
@@ -527,8 +546,7 @@ void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
 }
 
 
-
-// Déplace le personnage d'une case à l'aide des flèches du clavier
+// Déplacements clavier de Owen et Blue
 
 void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 {
@@ -562,7 +580,63 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 
 RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
 
-//AfficherPlateau(plateau);
+
+//Partie
+
+void Jeu ()
+{ 
+    AfficherPlateau(plateau);
+    bool finCroc = false;
+    bool finGrenade = false;
+    while (finCroc == false && finGrenade == false)
+    {
+    
+        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
+        
+
+        AfficherPlateau(plateau);
+        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+        if (finCroc)
+        {
+            break;
+        }
+
+        DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
+        AfficherPlateau(plateau);
+        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+        if (finCroc)
+        {
+            break;
+        }
+
+        DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
+        AfficherPlateau(plateau);
+
+        if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
+        {
+            PouvoirBlue(ref positionYIR, ref positionXIR);
+            AfficherPlateau(plateau);
+        }
+
+        DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
+        AfficherPlateau(plateau);
+        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+        if (finCroc)
+        {
+            break;
+        }
+
+        RecupererGrenadeSpe(positionYOwen, positionXOwen);
+
+        Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie, ref finGrenade, ref enervement);
+        if (finGrenade)
+        {
+            break;
+        }
+    }
+    Console.WriteLine("La partie est finie !");   
+}
+
 
 //Commencer une partie
 
@@ -572,69 +646,13 @@ do
 {
     key = Console.ReadKey(intercept: true);  // Attente d'une touche sans l'afficher
 
-    if (key.Key != ConsoleKey.Enter)
+    if (key.Key == ConsoleKey.Enter)
     {
+        Jeu();
         Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie");
     }
 }
-while (key.Key != ConsoleKey.Enter);
-
-AfficherPlateau(plateau);
-bool finCroc = false;
-bool finGrenade = false;
-
-while (finCroc == false && finGrenade == false)
-{
-    if (enervement == true)
-    {
-        DeplacementAleatoireEnervee("🟥", ref positionXIR, ref positionYIR);
-    }
-    else
-    {
-        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
-    }
-
-    AfficherPlateau(plateau);
-    Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-    if (finCroc)
-    {
-        break;
-    }
-
-    DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
-    AfficherPlateau(plateau);
-    Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-    if (finCroc)
-    {
-        break;
-    }
-
-    DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
-    AfficherPlateau(plateau);
-
-    if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
-    {
-        PouvoirBlue(ref positionYIR, ref positionXIR);
-        AfficherPlateau(plateau);
-    }
-
-    DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
-    AfficherPlateau(plateau);
-    Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-    if (finCroc)
-    {
-        break;
-    }
-
-    RecupererGrenadeSpe(positionYOwen, positionXOwen);
-
-    Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie, ref finGrenade, ref enervement);
-    if (finGrenade)
-    {
-        break;
-    }
-}
-Console.WriteLine("La partie est finie !");   
+while (key.Key == ConsoleKey.Enter);
 
 
 
