@@ -68,7 +68,7 @@ int pdvBlue = 100;
 int pdvIR = 10 * nbGrenade;
 int coorYGrenadeSpe;
 int coorXGrenadeSpe;
-string nomMaisie = "Maisie";    //à supp ?
+string nomMaisie = "Maisie";    
 string nomBlue = "Blue";
 string nomOwen = "Owen";
 Random rng = new Random();
@@ -495,7 +495,7 @@ void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int position
 
 void DeplacementAleatoire(string personnage, ref int x, ref int y)
 {
-    plateau[y, x] = "⬜"; //Réinitialise le plateau
+    plateau[y, x] = "⬜"; //Réinitialise la case du personnage
     Random rng = new Random();
     int nbrCaseX = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
     int nbrCaseY = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
@@ -550,33 +550,70 @@ void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
 
 // Déplacements clavier de Owen et Blue
 
+
+
 void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 {
+    int newX = x;
+    int newY = y;
+    bool deplacementValide = false; // Indicateur pour savoir si le déplacement est valide
+
     Console.WriteLine($"Presser une flèche du clavier pour déplacer {nom}");
 
-    plateau[y, x] = "⬜"; // Réinitialise le plateau
+    do
+    {
+        ConsoleKeyInfo key = Console.ReadKey(intercept: true);
 
-    ConsoleKeyInfo key = Console.ReadKey(intercept: true);
-    if (key.Key == ConsoleKey.LeftArrow && x > 0) // Flèche gauche
-    {
-        x -= 1;
-    }
-    else if (key.Key == ConsoleKey.RightArrow && x < Console.WindowWidth - 1) // Flèche droite
-    {
-        x += 1;
-    }
-    else if (key.Key == ConsoleKey.UpArrow && y > 0) // Flèche haut
-    {
-        y -= 1;
-    }
-    else if (key.Key == ConsoleKey.DownArrow && y < Console.WindowHeight - 1) // Flèche bas
-    {
-        y += 1;
-    }
+        // Calcul des nouvelles coordonnées en fonction de la touche pressée
+        if (key.Key == ConsoleKey.LeftArrow && x > 0) // Flèche gauche
+        {
+            newX = x - 1;
+        }
+        else if (key.Key == ConsoleKey.RightArrow && x < Console.WindowWidth - 1) // Flèche droite
+        {
+            newX = x + 1;
+        }
+        else if (key.Key == ConsoleKey.UpArrow && y > 0) // Flèche haut
+        {
+            newY = y - 1;
+        }
+        else if (key.Key == ConsoleKey.DownArrow && y < Console.WindowHeight - 1) // Flèche bas
+        {
+            newY = y + 1;
+        }
 
-    plateau[y, x] = personnage; // Affiche le personnage sur sa nouvelle position
+        // Vérification : deplacement valide ou non
+        
+        if (newX < 0 || newY < 0 || newX > (plateau.GetLength(1) - 1) || newY > (plateau.GetLength(0) - 1) || (plateau[newY,newX] != "⬜")) //Si les nouvelles coordonnées sont en dehors du plateau ou si la case cible n'est pas vide
+        {
+            Console.WriteLine("Déplacement impossible : la case est occupée ou hors du plateau. Pressez une autre flèche.");
+            deplacementValide = false; 
+            newX = x; // On reprend les coordonnées initiales
+            newY = y;
+        }
+        else if ((plateau[newY, newX] == "🧨") && (personnage == "🟩")) // Si grenade spéciale et Owen (les autres perso ne peuvent pas récup de grenades spéciales)
+        {
+            nbGrenadeSpe += 1;
+            plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
+            y = newY; // Met à jour les coordonnées après déplacement
+            x = newX;
+            plateau[y, x] = personnage; // Met à jour la position d'Owen
+            Console.WriteLine($"Owen a récupéré une grenade spéciale ! Vous avez désormais {nbGrenadeSpe} grenade(s) spéciale(s)");
+            deplacementValide = true; 
+        }
+        else    //Si la case cible est vide
+        {
+            plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
+            y = newY;
+            x = newX;
+            plateau[y, x] = personnage; // Met à jour la position du personnage
+            deplacementValide = true; 
+        }
 
-}
+    } while (!deplacementValide); // Répéter tant que le déplacement n'est pas valide
+
+} 
+
 
 //Tests à supprimer
 
