@@ -73,6 +73,7 @@ string nomBlue = "Blue";
 string nomOwen = "Owen";
 Random rng = new Random();
 bool enervement = false;
+bool finPv = false;
 
 
 // Lancer ou non d'une grenade, spéciale ou non
@@ -276,11 +277,12 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int
 
 void SystèmePV(int pV, string nom, string owen)
 {
+
     pV /= 2;
     if (pV == 0)
     {
         Console.WriteLine($"{nom} a été tuée par {owen}. Fin de la partie.");
-       
+        finPv = true;
         
     }
         
@@ -586,9 +588,12 @@ RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR,
 void Jeu ()
 { 
     AfficherPlateau(plateau);
+
     bool finCroc = false;
     bool finGrenade = false;
-    while (finCroc == false && finGrenade == false)
+
+    
+    while (finCroc == false && finGrenade == false && finPv == false)
     {
     
         DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
@@ -629,7 +634,7 @@ void Jeu ()
         RecupererGrenadeSpe(positionYOwen, positionXOwen);
 
         Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie, ref finGrenade, ref enervement);
-        if (finGrenade)
+        if (finGrenade || finPv)
         {
             break;
         }
