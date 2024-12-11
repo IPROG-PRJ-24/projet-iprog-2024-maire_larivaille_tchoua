@@ -252,7 +252,7 @@ void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue
     plateau[positionYIR, positionXIR] = "⬜"; // Supprimer le caractère I du plateau aux anciennes positions
     Console.WriteLine("Sélectionnez la direction dans laquelle envoyer l'IR: Nord, Sud, Est ou Ouest ?");
     string direction = Console.ReadLine()!;
-    if (direction == "Ouest")
+    if (direction == "Ouest" || direction == "ouest")
     {
         for (int i = 1; i <= 3; i++)
         {
@@ -264,7 +264,7 @@ void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue
         if ((positionXIR - 3 >= 0) && (plateau[positionYIR, positionXIR - 1] != "💥") && (plateau[positionYIR, positionXIR - 2] != "💥") && (plateau[positionYIR, positionXIR - 3] != "💥"))
             positionXIR -= 3;
     }
-    else if (direction == "Est")
+    else if (direction == "Est" || direction == "est")
     {
         for (int i = 1; i <= 3; i++)
         {
@@ -276,7 +276,7 @@ void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue
             positionXIR += 3;
     }
 
-    else if (direction == "Sud")
+    else if (direction == "Sud" || direction == "sud")
     {
         for (int i = 1; i <= 3; i++)
         {
@@ -287,7 +287,7 @@ void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue
             positionYIR += 3;
     }
 
-    else if (direction == "Nord")
+    else if (direction == "Nord" || direction == "nord")
     {
         for (int i = 1; i <= 3; i++)
         {
@@ -340,21 +340,20 @@ string[,] CréerPlateau(int dim1, int dim2)
     {
         PlacerAléatoire("🧨", plateau);  //"💥" symbole à utiliser pour les trous de grenade 
     }
-
     return plateau;
 }
 
-string[,] PlacerAléatoire(string perso, string[,] plateau)
+string[,] PlacerAléatoire(string perso, string[,] plateau)  // 1er placement aléatoire des perso sur le plateau
 {
     int x;
     int y;
 
     do
     {
-        x = TirerNbAléatoire(plateau.GetLength(1));     // Tirer un x (abscisse) aléatoire entre 0 et le nombre de colonnes du plateau
-        y = TirerNbAléatoire(plateau.GetLength(0));     // Tirer un y (ordonné) aléatoire entre 0 et le nombre de lignes du plateau
+        x = TirerNbAléatoire(plateau.GetLength(1));     //Tirer un x (abscisse) aléatoire entre 0 et le nombre de colonnes du plateau
+        y = TirerNbAléatoire(plateau.GetLength(0));     //Tirer un y (ordonné) aléatoire entre 0 et le nombre de lignes du plateau
     }
-    while (plateau[y, x] != "⬜");
+    while (plateau[y, x] != "⬜");                      //La nouvelle case doit etre libre
 
     plateau[y, x] = perso;
     return plateau;
@@ -391,7 +390,7 @@ void AfficherPlateau(string[,] plateau)      //Afficher le plateau
     }
 }
 
-int TirerNbAléatoire(int max)   //Tirer un nombre aléatoire
+int TirerNbAléatoire(int max)   //Tirer un nombre aléatoire entre 0 et la borne max à préciser
 {
     Random rng = new Random();
     int nb = rng.Next(0, max);   //max : borne supérieure en paramètre
@@ -433,64 +432,59 @@ void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int position
 
 void DeplacementAleatoire(string personnage, ref int x, ref int y)
 {
-    plateau[y, x] = "⬜"; //Réinitialise la case du personnage
+    int newX;
+    int newY;
+    int nbrCaseX;
+    int nbrCaseY;
+    bool deplacementValide = false;
     Random rng = new Random();
-    int nbrCaseX = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
-    int nbrCaseY = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
-    while (nbrCaseX == 0 && nbrCaseY == 0) // Eviter que le déplacement soit nul (les deux coordonnées restent les mêmes)
+
+    do 
     {
-        nbrCaseX = rng.Next(-1, 2);
-        nbrCaseY = rng.Next(-1, 2);
-    }
-    x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
-    y = y + nbrCaseY;
-    while (x < 0 || y < 0 || x > (plateau.GetLength(1) - 1) || y > (plateau.GetLength(0) - 1) || (plateau[y,x] != "⬜")) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau , ou qu'elle soit sur la case d'un autre joueur
-    {
-        nbrCaseX = rng.Next(-1, 2);
-        nbrCaseY = rng.Next(-1, 2);
-        x = x + nbrCaseX;
-        y = y + nbrCaseY;
-    }
-    plateau[y, x] = personnage; // Prend la nouvelle position du personnage 
+        if (personnage == "🟥" && enervement == true)   // Si l'Indominus est énervée elle peut se déplacer de 2 cases à la fois
+        {
+            nbrCaseX = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
+            nbrCaseY = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée y
+        }
+        else
+        {
+            nbrCaseX = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
+            nbrCaseY = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
+        }
+       
+        if (nbrCaseX != 0 && nbrCaseY != 0)    // Si le déplacement n'est pas nul (les deux coordonnées restent les mêmes)
+        {
+            newX = x + nbrCaseX;
+            newY = y + nbrCaseY;
+            if (newX > 0 && newY > 0 && newX < plateau.GetLength(1) && newY < plateau.GetLength(0))
+            {
+                if (personnage == "🟪" && ((plateau[newY,newX] == "⬜") || (plateau[newY,newX] == "🟥"))) //Maisie peut tomber par accident sur IR mais pas sur un autre joueur
+                {
+                    deplacementValide = true;
+                    plateau[y, x] = "⬜";   // Réinitialise le plateau
+                    y = newY;   // Met à jour les coordonnées après déplacement
+                    x = newX;
+                    plateau[y, x] = personnage; // Prend la nouvelle position du personnage
+                    Console.WriteLine("Maisie s'est déplacée.");
+                }
+                if (personnage == "🟥" && plateau[newY,newX] != "💥" && plateau[newY,newX] != "🧨" && plateau[newY,newX] != "🟦")  //IR peut tomber sur un autre joueur et le tuer (sauf Blue car elle est trop rapide)
+                {
+                    deplacementValide = true;
+                    plateau[y, x] = "⬜"; 
+                    y = newY; 
+                    x = newX;
+                    plateau[y, x] = personnage; 
+                    Console.WriteLine("IR s'est déplacée.");
+                }
+            }
+        }
+
+    } while (!deplacementValide);
 
 }
-
-
-
-// Si l'Indominus est énervée elle peut se déplacer de 2 cases à la fois
-
-void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
-{
-    plateau[y, x] = "⬜"; //Réinitialise le plateau
-
-    Random rng = new Random();
-    int nbrCaseX = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
-    int nbrCaseY = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée y
-
-    while (nbrCaseX == 0 && nbrCaseY == 0) // Eviter que le déplacement soit nul (les deux coordonnées restent les mêmes)
-    {
-        nbrCaseX = rng.Next(-2, 3);
-        nbrCaseY = rng.Next(-2, 3);
-    }
-    x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
-    y = y + nbrCaseY;
-
-    while (x < 0 || y < 0 || x > (plateau.GetLength(1) - 1) || y > (plateau.GetLength(0) - 1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
-    {
-        nbrCaseX = rng.Next(-2, 3);
-        nbrCaseY = rng.Next(-2, 3);
-        x = x + nbrCaseX;
-        y = y + nbrCaseY;
-    }
-    plateau[y, x] = personnage; // Affiche la nouvelle position de l'Indominus
-
-}
-
 
 
 // Déplace le personnage d'une case à l'aide des flèches du clavier
-
-
 
 void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 {
@@ -524,9 +518,9 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 
         // Vérification : deplacement valide ou non
         
-        if (newX < 0 || newY < 0 || newX > (plateau.GetLength(1) - 1) || newY > (plateau.GetLength(0) - 1) || (plateau[newY,newX] != "⬜")) //Si les nouvelles coordonnées sont en dehors du plateau ou si la case cible n'est pas vide
+        if (newX < 0 || newY < 0 || newX > (plateau.GetLength(1) - 1) || newY > (plateau.GetLength(0) - 1)) //Si les nouvelles coordonnées sont en dehors du plateau 
         {
-            Console.WriteLine("Déplacement impossible : la case est occupée ou hors du plateau. Pressez une autre flèche.");
+            Console.WriteLine("Déplacement impossible : hors du plateau. Pressez une autre flèche.");
             deplacementValide = false; 
             newX = x; // On reprend les coordonnées initiales
             newY = y;
@@ -540,6 +534,13 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
             plateau[y, x] = personnage; // Met à jour la position d'Owen
             Console.WriteLine($"Owen a récupéré une grenade spéciale ! Vous avez désormais {nbGrenadeSpe} grenade(s) spéciale(s)");
             deplacementValide = true; 
+        }
+        else if ((plateau[newY, newX] != "⬜") && (plateau[newY, newX] != "🟥"))
+        {
+            Console.WriteLine("Déplacement impossible : la case est occupée. Pressez une autre flèche.");
+            deplacementValide = false; 
+            newX = x; // On reprend les coordonnées initiales
+            newY = y;
         }
         else    //Si la case cible est vide
         {
@@ -558,27 +559,27 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 //Tests à supprimer
 
 RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+AfficherPlateau(plateau);
 
-//AfficherPlateau(plateau);
-
-if (enervement == false)
-{
-    DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
-}
-else
-{
-    DeplacementAleatoireEnervee("🟥", ref positionXIR, ref positionYIR);
-}
+DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
 AfficherPlateau(plateau);
 
 Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
 
 DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
 AfficherPlateau(plateau);
+Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
 
 DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
 AfficherPlateau(plateau);
+if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
+{
+    PouvoirBlue(ref positionYIR, ref positionXIR);
+    AfficherPlateau(plateau);
+}
 
+DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
+AfficherPlateau(plateau);
 if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
 {
     PouvoirBlue(ref positionYIR, ref positionXIR);
@@ -587,8 +588,13 @@ if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
 
 DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
 AfficherPlateau(plateau);
-
+Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
 Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
+
+
+DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
+AfficherPlateau(plateau);
+Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
 
 
 
