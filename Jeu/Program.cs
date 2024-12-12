@@ -23,12 +23,53 @@ Console.WriteLine("================");
 
 
 //Création plateau
-
+/*
 int hauteurPlateau;
 int longueurPlateau;
 bool saisieValide;
+*/
+int HauteurPlateau()
+{
+    int hauteurPlateau;
+    bool saisieValide;
 
+    Console.Write("Déterminez la hauteur du plateau : ");
+    do
+    {
+        string saisie = Console.ReadLine()!;
+        saisieValide = int.TryParse(saisie, out hauteurPlateau);
 
+        if (!saisieValide)
+        {
+            Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
+        }
+    } while (!saisieValide);
+    return hauteurPlateau;
+}
+
+int LongueurPlateau()
+{
+    int longueurPlateau;
+    bool saisieValide;
+
+    Console.Write("Déterminez la longueur du plateau : ");
+    do
+    {
+        string saisie = Console.ReadLine()!;
+        saisieValide = int.TryParse(saisie, out longueurPlateau);
+
+        if (!saisieValide)
+        {
+            Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
+        }
+    } while (!saisieValide);
+    return longueurPlateau;
+}
+
+//int hauteurPlateau = HauteurPlateau();
+//int longueurPlateau = LongueurPlateau();
+
+/*
 Console.Write("Déterminez la hauteur du plateau : ");
 do
 {
@@ -52,8 +93,9 @@ do
         Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
     }
 } while (!saisieValide);
+*/
 
-string[,] plateau = CréerPlateau(hauteurPlateau, longueurPlateau);
+string[,] plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());
 
 
 int nbGrenade = plateau.GetLength(1);
@@ -637,15 +679,6 @@ void Jeu ()
 
     while (finCroc == false && finGrenade == false && finPv == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
     {
-    
-        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
-
-        AfficherPlateau(plateau);
-        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-        if (finCroc)
-        {
-            break; // La partie s'arrête si l'indominus mange un personnage
-        }
 
         DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
         AfficherPlateau(plateau);
@@ -653,6 +686,14 @@ void Jeu ()
         if (finCroc)
         {
             break; // La partie s'arrête si Maisie est mangée
+        }
+
+        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
+        AfficherPlateau(plateau);
+        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+        if (finCroc)
+        {
+            break; // La partie s'arrête si l'indominus mange un personnage
         }
 
         DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
@@ -691,17 +732,25 @@ ConsoleKeyInfo key;
 do
 {
     key = Console.ReadKey(intercept: true);  // Attente d'une touche sans l'afficher
-
+   
     if (key.Key == ConsoleKey.Enter)
     {
         Jeu();
-        Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); // Rejouer quand la partie est terminée 
-        plateau = CréerPlateau(hauteurPlateau, longueurPlateau);    // Réinitialise le plateau en début de partie
-        RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
-        AfficherPlateau(plateau);
     }
+
+    Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); // Rejouer quand la partie est terminée 
+    key = Console.ReadKey(intercept: true); 
+    if (key.Key == ConsoleKey.Enter)
+    {
+        plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
+        RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue); 
+        AfficherPlateau(plateau);
+        Console.WriteLine("Cliquer sur la touche Entrée pour confirmer la taille du plateau");
+    }
+    
 }
 while (key.Key == ConsoleKey.Enter);
+
 
 
 
