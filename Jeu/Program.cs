@@ -457,7 +457,7 @@ void AfficherPlateau(string[,] plateau)
     plateau[positionYIR, positionXIR] = "🟥";
 
     Console.Write("  ");
-    for (int t = 0; t < plateau.GetLength(0) + 2; t++)
+    for (int t = 0; t < plateau.GetLength(0); t++)
     {
         Console.Write($"{t} ");
     }
