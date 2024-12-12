@@ -303,7 +303,7 @@ void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 
 string[,] CréerPlateau(int dim1, int dim2)
 {
-    
+
     string[,] plateau = new string[dim1, dim2];
 
     for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
@@ -413,14 +413,14 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
     }
     x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
     y = y + nbrCaseY;
-    while (x < 0 || y < 0 ||  x > (plateau.GetLength(1)-1) || y > (plateau.GetLength(0)-1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    while (x < 0 || y < 0 || x > (plateau.GetLength(1) - 1) || y > (plateau.GetLength(0) - 1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
         nbrCaseX = rng.Next(-1, 2);
         nbrCaseY = rng.Next(-1, 2);
         x = x + nbrCaseX;
         y = y + nbrCaseY;
     }
-    plateau[y,x] = personnage; // Affiche la nouvelle position du personnage 
+    plateau[y, x] = personnage; // Affiche la nouvelle position du personnage 
 
 }
 
@@ -444,14 +444,14 @@ void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
     x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
     y = y + nbrCaseY;
 
-    while (x < 0 || y < 0 ||  x > (plateau.GetLength(1)-1) || y > (plateau.GetLength(0)-1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
+    while (x < 0 || y < 0 || x > (plateau.GetLength(1) - 1) || y > (plateau.GetLength(0) - 1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
     {
         nbrCaseX = rng.Next(-2, 3);
         nbrCaseY = rng.Next(-2, 3);
         x = x + nbrCaseX;
         y = y + nbrCaseY;
     }
-    plateau[y,x] = personnage; // Affiche la nouvelle position de l'Indominus
+    plateau[y, x] = personnage; // Affiche la nouvelle position de l'Indominus
 
 }
 
@@ -487,8 +487,151 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 
 }
 
-//Tests à supprimer
+/*void VerifierEnclos(int positionXIR, int positionYIR)
+{
+    int coorXVerif = positionXIR;
+    int coorYVerif = positionYIR;
+    while ((coorYVerif < plateau.GetLength(0)) && (plateau[coorYVerif, coorXVerif] != "💥"))
+    {
+        coorYVerif++;
+    }
+    int ptDepartX = coorXVerif;
+    int ptDepartY = coorYVerif;
+    bool paroi = true;
+    string directionVoulue = "bas";
+    coorXVerif++;
+    while ((ptDepartX != coorXVerif) && (ptDepartX != coorYVerif) && paroi)
+    {
+        switch (directionVoulue)
+        {
+            case "bas":
+                AllerEnBas(ref coorXVerif, ref coorYVerif, ref paroi, ref directionVoulue);
+                directionVoulue = "droite";
+                break;
+            case "haut":
+                AllerEnHaut(ref coorXVerif, ref coorYVerif, ref paroi, ref directionVoulue);
+                directionVoulue = "gauche";
+                break;
+            case "droite":
+                AllerADroite(ref coorXVerif, ref coorYVerif, ref paroi, ref directionVoulue);
+                directionVoulue = "haut";
+                break;
+            case "gauche":
+                AllerAGauche(ref coorXVerif, ref coorYVerif, ref paroi, ref directionVoulue);
+                directionVoulue = "bas";
+                break;
+        }
+    }
+    if (!paroi)
+    {
+        Console.WriteLine("Pas d'enclos");
+        return;
+    }
 
+    bool personnageEnferme =
+            plateau[coorXVerif, coorYVerif] == "🟩" ||
+            plateau[coorXVerif, coorYVerif] == "🟪" ||
+            plateau[coorXVerif, coorYVerif] == "🟦";
+
+    if ((paroi == false) && ((plateau[coorXVerif, coorYVerif] == "🟩") || (plateau[coorXVerif, coorYVerif] == "🟪") || plateau[coorXVerif, coorYVerif] == "🟦"))
+    {
+        Console.WriteLine("Perdu ! Quelqu'un est enfermé avec l'IR");
+        return;
+    }
+    if ((ptDepartX == coorXVerif) && (ptDepartX == coorYVerif))
+    {
+        Console.WriteLine("Enclos");
+        return;
+    }
+
+}
+
+void AllerEnBas(ref int coorXVerif, ref int coorYVerif, ref bool paroi, ref string direction)
+{
+    if (plateau[coorYVerif, coorXVerif] == "💥")
+    {
+        while ((coorXVerif < plateau.GetLength(1)) && (plateau[coorYVerif, coorXVerif + 1] == "💥"))
+        {
+            coorXVerif++;
+        }
+        if (plateau[coorYVerif, coorXVerif + 1] != "💥")
+        {
+            if ((plateau[coorYVerif - 1, coorXVerif] == "💥") || (plateau[coorYVerif - 1, coorXVerif + 1] == "💥"))
+            {
+                direction = "droite";
+                coorYVerif--;
+            }
+            if ((plateau[coorYVerif - 1, coorXVerif] != "💥") && (plateau[coorYVerif - 1, coorXVerif + 1] != "💥"))
+                paroi = false;
+        }
+    }
+}
+
+void AllerEnHaut(ref int coorXVerif, ref int coorYVerif, ref bool paroi, ref string direction)
+{
+    if (plateau[coorYVerif, coorXVerif] == "💥")
+    {
+        while ((coorXVerif > 0) && (plateau[coorYVerif, coorXVerif - 1] == "💥"))
+        {
+            coorXVerif--;
+        }
+        if (plateau[coorYVerif, coorXVerif - 1] != "💥")
+        {
+            if ((plateau[coorYVerif + 1, coorXVerif] == "💥") || (plateau[coorYVerif + 1, coorXVerif - 1] == "💥"))
+            {
+                direction = "gauche";
+                coorYVerif++;
+            }
+            if ((plateau[coorYVerif + 1, coorXVerif] != "💥") && (plateau[coorYVerif + 1, coorXVerif - 1] != "💥"))
+                paroi = false;
+        }
+    }
+}
+
+void AllerADroite(ref int coorXVerif, ref int coorYVerif, ref bool paroi, ref string direction)
+{
+    if (plateau[coorYVerif, coorXVerif] == "💥")
+    {
+        while ((coorYVerif > 0) && (plateau[coorYVerif - 1, coorXVerif] == "💥"))
+        {
+            coorYVerif--;
+        }
+        if (plateau[coorYVerif - 1, coorXVerif] != "💥")
+        {
+            if ((plateau[coorYVerif, coorXVerif + 1] == "💥") || (plateau[coorYVerif - 1, coorXVerif + 1] == "💥"))
+            {
+                direction = "haut";
+                coorXVerif++;
+            }
+            if ((plateau[coorYVerif, coorXVerif + 1] != "💥") && (plateau[coorYVerif - 1, coorXVerif + 1] != "💥"))
+                paroi = false;
+        }
+    }
+}
+
+void AllerAGauche(ref int coorXVerif, ref int coorYVerif, ref bool paroi, ref string direction)
+{
+    if (plateau[coorYVerif, coorXVerif] == "💥")
+    {
+        while ((coorYVerif < plateau.GetLength(1)) && (plateau[coorYVerif + 1, coorXVerif] == "💥"))
+        {
+            coorYVerif++;
+        }
+        if (plateau[coorYVerif + 1, coorXVerif] != "💥")
+        {
+            if ((plateau[coorYVerif, coorXVerif - 1] == "💥") || (plateau[coorYVerif + 1, coorXVerif - 1] == "💥"))
+            {
+                direction = "bas";
+                coorXVerif--;
+            }
+            if ((plateau[coorYVerif, coorXVerif - 1] != "💥") && (plateau[coorYVerif + 1, coorXVerif - 1] != "💥"))
+                paroi = false;
+        }
+    }
+}
+
+//Tests à supprimer
+/*
 RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
 
 //AfficherPlateau(plateau);
@@ -530,4 +673,179 @@ Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
 //Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
 //AfficherPlateau(plateau);
 //PouvoirBlue(ref positionYIR, ref positionXIR);
+*/
+
+void VerifierEnclos(int positionXIR, int positionYIR)
+{
+    int hauteur = plateau.GetLength(0);
+    int largeur = plateau.GetLength(1);
+    bool[,] casesEnclos = new bool[hauteur, largeur];
+    bool[,] casesVisitees = new bool[plateau.GetLength(0), plateau.GetLength(1)];
+
+    bool enclosFerme = RechercherEnclos(positionXIR, positionYIR, casesEnclos, casesVisitees);
+
+    if (enclosFerme)
+    {
+        bool autrePersonnageEnferme = VerifierPersonnageEnferme(casesEnclos, casesVisitees);
+
+        if (autrePersonnageEnferme)
+        {
+            Console.WriteLine("Perdu ! Quelqu'un est enfermé avec l'IR");
+        }
+        else
+        {
+            Console.WriteLine("Bien joué ! Tu as enfermé l'IR");
+        }
+    }
+    else
+    {
+        Console.WriteLine("Pas d'enclos");
+    }
+}
+
+
+
+bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, bool[,] casesVisitees)
+{
+    int hauteur = plateau.GetLength(0);
+    int largeur = plateau.GetLength(1);
+    int departX = 0;
+    int departY = 0;
+
+    while ((departX == 0) && (departY == 0))
+    {
+        TrouverDepart(plateau, ref departX, ref departY);
+    }
+
+    int retourX = departX;
+    int retourY = departY;
+    int nouveauX = departX;
+    int nouveauY = departY;
+    int[,] directions = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+    bool toutesDirections = false;
+    bool uneDirection = true;
+    while ((nouveauX != retourX) || (nouveauY != retourY))
+    {
+        if (uneDirection)
+        {
+            RechercherProchain(plateau, directions, ref nouveauX, ref nouveauY, ref departX, ref departY, ref uneDirection, ref toutesDirections, casesVisitees);
+        }
+        else if (!toutesDirections)
+        {
+            return false; // Aucune direction valide, on sort
+        }
+    }
+    return true;
+}
+
+bool TrouverDepart(string[,] plateau, ref int x, ref int y)
+{
+    for (int j = 0; j < plateau.GetLength(1); j++)
+    {
+        for (int i = 0; i < plateau.GetLength(0); i++)
+        {
+            if (plateau[i, j] == "💥")
+            {
+                x = j;
+                y = i;
+                return true;
+            }
+        }
+    }
+    x = 0;
+    y = 0;
+    return false;
+}
+
+void RechercherProchain(string[,] plateau, int[,] directions, ref int nouveauX, ref int nouveauY, ref int departX, ref int departY, ref bool uneDirection, ref bool toutesDirections, bool[,] casesVisitees)
+{
+    uneDirection = false;
+    for (int i = 0; i < directions.GetLength(0); i++)
+    {
+        nouveauX = departX + directions[i, 1];
+        nouveauY = departY + directions[i, 0];
+
+        if (nouveauX >= plateau.GetLength(0) || nouveauX < 0 ||
+            nouveauY >= plateau.GetLength(1) || nouveauY < 0)
+        {
+            continue; // Ignore les positions hors des limites
+        }
+
+        if (!casesVisitees[nouveauX, nouveauY])
+        {
+            casesVisitees[nouveauX, nouveauY] = true;
+            departX = nouveauX;
+            departY = nouveauY;
+            uneDirection = true;
+            toutesDirections = true;
+        }
+        if (plateau[nouveauX, nouveauY] == "💥")
+        {
+            departX = nouveauX;
+            departY = nouveauY;
+            uneDirection = true;
+            toutesDirections = true;
+        }
+    }
+}
+bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
+{
+    for (int y = 0; y < plateau.GetLength(0); y++)
+    {
+        for (int x = 0; x < plateau.GetLength(1); x++)
+        {
+            // Vérifier la présence de personnages dans l'enclos
+            if ((casesEnclos[positionYBlue, positionXBlue] || casesEnclos[positionYOwen, positionXOwen] || casesEnclos[positionYMaisie, positionXMaisie]) == casesVisitees[y, x])
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+/*Test enclos
+positionXIR = 4;
+positionYIR = 4;
+plateau[2, 3] = "💥";
+plateau[2, 4] = "💥";
+plateau[2, 5] = "💥";
+plateau[3, 6] = "💥";
+plateau[3, 7] = "💥";
+plateau[3, 8] = "💥";
+plateau[4, 8] = "💥";
+plateau[5, 8] = "💥";
+plateau[5, 7] = "💥";
+plateau[6, 7] = "💥";
+plateau[6, 6] = "💥";
+plateau[6, 5] = "💥";
+plateau[6, 4] = "💥";
+plateau[6, 3] = "💥";
+plateau[5, 3] = "💥";
+plateau[4, 2] = "💥";
+plateau[3, 2] = "💥";
+AfficherPlateau(plateau);
+VerifierEnclos(positionXIR, positionYIR);
+*/
+positionXIR = 4;
+positionYIR = 4;
+plateau[0, 8] = "💥";
+plateau[1, 8] = "💥";
+plateau[2, 8] = "💥";
+plateau[3, 8] = "💥";
+plateau[4, 8] = "💥";
+plateau[5, 8] = "💥";
+plateau[5, 7] = "💥";
+plateau[6, 7] = "💥";
+plateau[6, 6] = "💥";
+plateau[6, 5] = "💥";
+plateau[6, 4] = "💥";
+plateau[6, 3] = "💥";
+plateau[5, 3] = "💥";
+plateau[4, 2] = "💥";
+plateau[4, 1] = "💥";
+plateau[4, 0] = "💥";
+AfficherPlateau(plateau);
+VerifierEnclos(positionXIR, positionYIR);
 
