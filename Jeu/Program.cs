@@ -317,7 +317,6 @@ void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXO
 }
 
 //Création du plateau
-
 string[,] CréerPlateau(int dim1, int dim2)
 {
 
@@ -429,7 +428,6 @@ void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int position
 
 
 // Maisie et l'Indominus se déplacent de manière aléatoire d'une case à la fois
-
 void DeplacementAleatoire(string personnage, ref int x, ref int y)
 {
     int newX;
@@ -485,7 +483,6 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
 
 
 // Déplace le personnage d'une case à l'aide des flèches du clavier
-
 void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 {
     int newX = x;
@@ -595,7 +592,6 @@ Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie);
 DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
 AfficherPlateau(plateau);
 Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
-
 
 
 
