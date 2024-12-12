@@ -635,8 +635,7 @@ void Jeu ()
     bool finCroc = false;
     bool finGrenade = false;
 
-
-    while (finCroc == false && finGrenade == false && finPv == false)
+    while (finCroc == false && finGrenade == false && finPv == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
     {
     
         DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
@@ -645,7 +644,7 @@ void Jeu ()
         Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
         if (finCroc)
         {
-            break;
+            break; // La partie s'arrête si l'indominus mange un personnage
         }
 
         DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
@@ -653,7 +652,7 @@ void Jeu ()
         Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
         if (finCroc)
         {
-            break;
+            break; // La partie s'arrête si Maisie est mangée
         }
 
         DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
@@ -670,7 +669,7 @@ void Jeu ()
         Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
         if (finCroc)
         {
-            break;
+            break; // La partie s'arrête si Owen est mangé
         }
 
         RecupererGrenadeSpe(positionYOwen, positionXOwen);
@@ -678,7 +677,7 @@ void Jeu ()
         Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie, ref finGrenade, ref enervement);
         if (finGrenade || finPv)
         {
-            break;
+            break; // La partie s'arrête si un personnage est tué par une grenade
         }
     }
     Console.WriteLine("La partie est finie !");   
@@ -696,8 +695,8 @@ do
     if (key.Key == ConsoleKey.Enter)
     {
         Jeu();
-        Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie");
-        plateau = CréerPlateau(hauteurPlateau, longueurPlateau);    
+        Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); // Rejouer quand la partie est terminée 
+        plateau = CréerPlateau(hauteurPlateau, longueurPlateau);    // Réinitialise le plateau en début de partie
         RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
         AfficherPlateau(plateau);
     }
