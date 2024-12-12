@@ -118,8 +118,8 @@ bool finPv = false;
 void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int pdvBlue, int pdvMaisie, ref bool finGrenade, ref bool enervement)
 {
 
-    int coorYGrenade;
-    int coorXGrenade;
+    int coorYGrenade = 900;
+    int coorXGrenade = 900;
     int randomY = 0;
     int randomX = 0;
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
