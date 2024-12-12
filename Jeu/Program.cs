@@ -1,4 +1,5 @@
 ﻿//Valeurs pour tester A SUPPRIMER
+
 int positionYOwen = 0;
 int positionXOwen = 0;
 int positionYIR = 0;
@@ -51,15 +52,8 @@ do
     }
 } while (!saisieValide);
 
-string[,] plateau = new string[hauteurPlateau, longueurPlateau];
+string[,] plateau = CréerPlateau(hauteurPlateau, longueurPlateau);
 
-for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
-{
-    for (int j = 0; j < plateau.GetLength(1); j++)
-    {
-        plateau[i, j] = "⬜";
-    }
-}
 
 int nbGrenade = plateau.GetLength(1);
 int nbGrenadeSpe = 1;
@@ -383,7 +377,15 @@ void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 //Création du plateau
 string[,] CréerPlateau(int dim1, int dim2)
 {
-    
+    string[,] plateau = new string[dim1, dim2];
+
+    for (int i = 0; i < plateau.GetLength(0); i++)	//Initialisation du plateau vide
+    {
+        for (int j = 0; j < plateau.GetLength(1); j++)
+        {
+            plateau[i, j] = "⬜";
+        }
+    }
     //Placement aléatoire des joueurs
     PlacerAléatoire("🟩", plateau); //Owen         
     PlacerAléatoire("🟦", plateau); //Blue
@@ -502,25 +504,47 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
 
     do 
     {
-        nbrCaseX = rng.Next(-1, 2);
-        nbrCaseY = rng.Next(-1, 2);
-    }
-    x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
-    y = y + nbrCaseY;
-    while (x < 0 || y < 0 ||  x > (plateau.GetLength(1)-1) || y > (plateau.GetLength(0)-1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
-    {
-        nbrCaseX = rng.Next(-1, 2);
-        nbrCaseY = rng.Next(-1, 2);
-        x = x + nbrCaseX;
-        y = y + nbrCaseY;
-    }
-    plateau[y,x] = personnage; // Affiche la nouvelle position du personnage 
+        if (personnage == "🟥" && enervement == true)   // Si l'Indominus est énervée elle peut se déplacer de 2 cases à la fois
+        {
+            nbrCaseX = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
+            nbrCaseY = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée y
+        }
+        else
+        {
+            nbrCaseX = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
+            nbrCaseY = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
+        }
+       
+        if (nbrCaseX != 0 && nbrCaseY != 0)    // Si le déplacement n'est pas nul (les deux coordonnées restent les mêmes)
+        {
+            newX = x + nbrCaseX;
+            newY = y + nbrCaseY;
+            if (newX > 0 && newY > 0 && newX < plateau.GetLength(1) && newY < plateau.GetLength(0))
+            {
+                if (personnage == "🟪" && ((plateau[newY,newX] == "⬜") || (plateau[newY,newX] == "🟥"))) //Maisie peut tomber par accident sur IR mais pas sur un autre joueur
+                {
+                    deplacementValide = true;
+                    plateau[y, x] = "⬜";   // Réinitialise le plateau
+                    y = newY;   // Met à jour les coordonnées après déplacement
+                    x = newX;
+                    plateau[y, x] = personnage; // Prend la nouvelle position du personnage
+                    Console.WriteLine("Maisie s'est déplacée.");
+                }
+                if (personnage == "🟥" && plateau[newY,newX] != "💥" && plateau[newY,newX] != "🧨" && plateau[newY,newX] != "🟦")  //IR peut tomber sur un autre joueur et le tuer (sauf Blue car elle est trop rapide)
+                {
+                    deplacementValide = true;
+                    plateau[y, x] = "⬜"; 
+                    y = newY; 
+                    x = newX;
+                    plateau[y, x] = personnage; 
+                    Console.WriteLine("IR s'est déplacée.");
+                }
+            }
+        }
+
+    } while (!deplacementValide);
 
 }
-
-
-// Déplacements énervé de l'Indominus 
-
 
 
 
@@ -606,10 +630,11 @@ AfficherPlateau(plateau);
 
 void Jeu ()
 {
+    
     bool finCroc = false;
     bool finGrenade = false;
 
-    
+
     while (finCroc == false && finGrenade == false && finPv == false)
     {
     
@@ -672,6 +697,9 @@ do
     {
         Jeu();
         Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie");
+        plateau = CréerPlateau(hauteurPlateau, longueurPlateau);    
+        RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+        AfficherPlateau(plateau);
     }
 }
 while (key.Key == ConsoleKey.Enter);
