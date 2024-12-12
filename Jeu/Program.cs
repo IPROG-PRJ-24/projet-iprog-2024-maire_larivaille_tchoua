@@ -28,6 +28,7 @@ int hauteurPlateau;
 int longueurPlateau;
 bool saisieValide;
 
+
 Console.Write("Déterminez la hauteur du plateau : ");
 do
 {
@@ -521,7 +522,7 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
             newY = y + nbrCaseY;
             if (newX > 0 && newY > 0 && newX < plateau.GetLength(1) && newY < plateau.GetLength(0))
             {
-                if (personnage == "🟪" && ((plateau[newY,newX] == "⬜") || (plateau[newY,newX] == "🟥"))) //Maisie peut tomber par accident sur IR mais pas sur un autre joueur
+                if ((personnage == "🟪") && ((plateau[newY,newX] == "⬜") || (plateau[newY,newX] == "🟥"))) //Maisie peut tomber par accident sur IR mais pas sur un autre joueur
                 {
                     deplacementValide = true;
                     plateau[y, x] = "⬜";   // Réinitialise le plateau
@@ -530,7 +531,7 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
                     plateau[y, x] = personnage; // Prend la nouvelle position du personnage
                     Console.WriteLine("Maisie s'est déplacée.");
                 }
-                if (personnage == "🟥" && plateau[newY,newX] != "💥" && plateau[newY,newX] != "🧨" && plateau[newY,newX] != "🟦")  //IR peut tomber sur un autre joueur et le tuer (sauf Blue car elle est trop rapide)
+                if ((personnage == "🟥") && (plateau[newY,newX] != "💥") && (plateau[newY,newX] != "🧨" ) && (plateau[newY,newX] != "🟦"))  //IR peut tomber sur un autre joueur et le tuer (sauf Blue car elle est trop rapide)
                 {
                     deplacementValide = true;
                     plateau[y, x] = "⬜"; 
@@ -639,7 +640,6 @@ void Jeu ()
     {
     
         DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
-        
 
         AfficherPlateau(plateau);
         Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
