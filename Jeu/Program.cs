@@ -381,8 +381,7 @@ void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
 }
 
 //Création du plateau
-
-string[,] CréerPlateau()
+string[,] CréerPlateau(int dim1, int dim2)
 {
     
     //Placement aléatoire des joueurs
@@ -522,32 +521,7 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
 
 // Déplacements énervé de l'Indominus 
 
-void DeplacementAleatoireEnervee(string personnage, ref int x, ref int y)
-{
-    plateau[y, x] = "⬜"; //Réinitialise le plateau
 
-    Random rng = new Random();
-    int nbrCaseX = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
-    int nbrCaseY = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée y
-
-    while (nbrCaseX == 0 && nbrCaseY == 0) // Eviter que le déplacement soit nul (les deux coordonnées restent les mêmes)
-    {
-        nbrCaseX = rng.Next(-2, 3);
-        nbrCaseY = rng.Next(-2, 3);
-    }
-    x = x + nbrCaseX; // Ajoute la valeur aléatoire à la coordonnée initiale
-    y = y + nbrCaseY;
-
-    while (x < 0 || y < 0 ||  x > (plateau.GetLength(1)-1) || y > (plateau.GetLength(0)-1)) // Evite que les nouvelles coordonnées soient négatives et donc qu'elles sortent du plateau 
-    {
-        nbrCaseX = rng.Next(-2, 3);
-        nbrCaseY = rng.Next(-2, 3);
-        x = x + nbrCaseX;
-        y = y + nbrCaseY;
-    }
-    plateau[y,x] = personnage; // Affiche la nouvelle position de l'Indominus
-
-}
 
 
 // Déplacements clavier de Owen et Blue
