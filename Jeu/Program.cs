@@ -111,7 +111,8 @@ string nomOwen = "Owen";
 Random rng = new Random();
 bool enervement = false;
 bool finPv = false;
-
+bool finCroc = false;
+bool finGrenade = false;
 
 // Lancer ou non d'une grenade, spéciale ou non
 
@@ -670,11 +671,10 @@ AfficherPlateau(plateau);
 
 //Partie
 
-void Jeu()
+void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade)
 {
 
-    bool finCroc = false;
-    bool finGrenade = false;
+    
     while (finCroc == false && finGrenade == false && finPv == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
     {
 
@@ -738,7 +738,10 @@ do
    
     if (key.Key == ConsoleKey.Enter)
     {
-        Jeu();
+        finPv = false;
+        finCroc = false;
+        finGrenade = false;
+        Jeu(ref finPv, ref finCroc,  ref finGrenade);
     }
 
     Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); // Rejouer quand la partie est terminée 
@@ -748,6 +751,8 @@ do
         plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
         RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue); 
         pdvIR = 10 * nbGrenade;
+        pdvMaisie = 100;
+        pdvBlue = 100;
         AfficherPlateau(plateau);
         Console.WriteLine("Cliquer sur la touche Entrée pour confirmer la taille du plateau");
     }
