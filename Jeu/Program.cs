@@ -162,13 +162,15 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                     }
                     else if (plateau[coorYGrenade, coorXGrenade] == "🟦")
                     {
-                        Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
-                        finGrenade = true;
+                        /*Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
+                        finGrenade = true;*/
+                        SystèmePV(ref pdvBlue, nomBlue, nomOwen);
                     }
                     else if (plateau[coorYGrenade, coorXGrenade] == "🟪")
                     {
-                        Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
-                        finGrenade = true;
+                        /*Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
+                        finGrenade = true;*/
+                        SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
                     }
                     else // sinon on crée une crevasse
                     {
@@ -254,13 +256,15 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                     }
                     else if (plateau[coorYGrenade, coorXGrenade] == "🟦")
                     {
-                        Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
-                        finGrenade = true;
+                        /*Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
+                        finGrenade = true;*/
+                        SystèmePV(ref pdvBlue, nomBlue, nomOwen);
                     }
                     else if (plateau[coorYGrenade, coorXGrenade] == "🟪")
                     {
-                        Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
-                        finGrenade = true;
+                        /*Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
+                        finGrenade = true;*/
+                        SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
                     }
                     else // sinon on crée une crevasse
                     {
@@ -309,8 +313,8 @@ void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
 
 void SystèmePV(ref int pV, string nom, string owen)
 {
-
-    pV /= 2;
+    
+    pV -= 50;
     if (pV == 0)
     {
         Console.WriteLine($"{nom} a été tuée par {owen}. Fin de la partie.");
@@ -318,7 +322,7 @@ void SystèmePV(ref int pV, string nom, string owen)
 
     }
 
-    if (pdvMaisie > 0)
+    else
         Console.WriteLine($"{nom} a été touchée par l'impact, attention");
 }
 
@@ -671,7 +675,6 @@ void Jeu()
 
     bool finCroc = false;
     bool finGrenade = false;
-
     while (finCroc == false && finGrenade == false && finPv == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
     {
 
@@ -744,6 +747,7 @@ do
     {
         plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
         RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue); 
+        pdvIR = 10 * nbGrenade;
         AfficherPlateau(plateau);
         Console.WriteLine("Cliquer sur la touche Entrée pour confirmer la taille du plateau");
     }
