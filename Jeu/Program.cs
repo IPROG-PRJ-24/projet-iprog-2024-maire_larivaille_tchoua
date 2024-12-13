@@ -115,7 +115,7 @@ bool finPv = false;
 
 // Lancer ou non d'une grenade, spéciale ou non
 
-void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int pdvBlue, int pdvMaisie, ref bool finGrenade, ref bool enervement)
+void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR, ref int pdvBlue, ref int pdvMaisie, ref bool finGrenade, ref bool enervement)
 {
 
     int coorYGrenade = 900;
@@ -688,6 +688,11 @@ void Jeu()
         {
             PouvoirBlue(ref positionYIR, ref positionXIR);
             AfficherPlateau(plateau);
+            Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+            if (finCroc)
+            {
+                break; // La partie s'arrête si Owen est mangé
+            }
         }
 
         DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
@@ -700,7 +705,7 @@ void Jeu()
 
         RecupererGrenadeSpe(positionYOwen, positionXOwen);
 
-        Grenade(positionYOwen, positionXOwen, nbGrenade, pdvIR, pdvBlue, pdvMaisie, ref finGrenade, ref enervement);
+        Grenade(positionYOwen, positionXOwen, nbGrenade, ref pdvIR, ref pdvBlue, ref pdvMaisie, ref finGrenade, ref enervement);
         if (finGrenade || finPv)
         {
             break; // La partie s'arrête si un personnage est tué par une grenade
