@@ -151,6 +151,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                     {
                         Console.WriteLine("IR a été touchée, -10 points de vie");
                         pdvIR -= 10;
+                        if (pdvIR == 0)
+                        {
+                            finPv = true;
+                            Console.WriteLine("L'IR n'a plus de points de vie");
+                        }
                         Console.WriteLine($"Points de vie de l'IR : {pdvIR}");
                         enervement = true; //sera plus rapide au prochain déplacement
                         Console.WriteLine("IR est énervée, faites attention au prochain tour");
@@ -177,11 +182,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                         coorXGrenadeSpe = coorXGrenade + randomX;
                         if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == "🟦")
                         {
-                            SystèmePV(pdvBlue, nomBlue, nomOwen);
+                            SystèmePV(ref pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == "🟪")
                         {
-                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
+                            SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
                             plateau[coorYGrenadeSpe, coorXGrenadeSpe] = "💥";
@@ -197,11 +202,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                         }
                         if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == "🟦")
                         {
-                            SystèmePV(pdvBlue, nomBlue, nomOwen);
+                            SystèmePV(ref pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == "🟪")
                         {
-                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
+                            SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
                         }
                         plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] = "💥";
                     }
@@ -238,6 +243,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                     {
                         Console.WriteLine("IR a été touchée, -10 points de vie");
                         pdvIR -= 10;
+                        if (pdvIR == 0)
+                        {
+                            finPv = true;
+                            Console.WriteLine("L'IR n'a plus de points de vie");
+                        }
                         Console.WriteLine($"Points de vie de l'IR : {pdvIR}");
                         enervement = true; //sera plus rapide au prochain déplacement
                         Console.WriteLine("IR est énervée, faites attention au prochain tour");
@@ -262,11 +272,11 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                         }
                         if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == "🟦")
                         {
-                            SystèmePV(pdvBlue, nomBlue, nomOwen);
+                            SystèmePV(ref pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == "🟪")
                         {
-                            SystèmePV(pdvMaisie, nomMaisie, nomOwen);
+                            SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
                             plateau[coorYGrenade + randomY, coorXGrenade + randomX] = "💥";
@@ -297,7 +307,7 @@ void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
 
 //Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
 
-void SystèmePV(int pV, string nom, string owen)
+void SystèmePV(ref int pV, string nom, string owen)
 {
 
     pV /= 2;
