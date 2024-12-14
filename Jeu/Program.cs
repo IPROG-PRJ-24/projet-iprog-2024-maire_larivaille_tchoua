@@ -76,8 +76,8 @@ bool finPv = false;
 void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, int pdvIR, int pdvBlue, int pdvMaisie, ref bool finGrenade, ref bool enervement)
 {
 
-    int coorYGrenade;
-    int coorXGrenade;
+    int coorYGrenade = 900; //Pour éviter les problèmes d'assignement
+    int coorXGrenade = 900;
     int randomY = 0;
     int randomX = 0;
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
@@ -689,25 +689,18 @@ do
 while (key.Key == ConsoleKey.Enter);
 
 
-
-
-//Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie);
-//AfficherPlateau(plateau);
-//PouvoirBlue(ref positionYIR, ref positionXIR);
-
-
 void VerifierEnclos(int positionXIR, int positionYIR)
 {
     int hauteur = plateau.GetLength(0);
     int largeur = plateau.GetLength(1);
-    bool[,] casesEnclos = new bool[hauteur, largeur];
-    bool[,] casesVisitees = new bool[plateau.GetLength(0), plateau.GetLength(1)];
+    bool[,] casesEnclos = new bool[hauteur, largeur];  // Va enregistrer les cases qui font partie de l'enclos
+    bool[,] casesVisitees = new bool[plateau.GetLength(0), plateau.GetLength(1)];  // Va enregistrer les cases qui ont été visitées par l'itération
 
     bool enclosFerme = RechercherEnclos(positionXIR, positionYIR, casesEnclos, casesVisitees);
 
     if (enclosFerme)
     {
-        bool autrePersonnageEnferme = VerifierPersonnageEnferme(casesEnclos);
+        bool autrePersonnageEnferme = VerifierPersonnageEnferme(casesEnclos, casesVisitees);
 
         if (autrePersonnageEnferme)
         {
@@ -730,137 +723,98 @@ bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, boo
 {
     int hauteur = plateau.GetLength(0);
     int largeur = plateau.GetLength(1);
-    int departX = 0;
-    int departY = 0;
 
-    while ((departX == 0) && (departY == 0))
+    // On démarre de la position de l'IR
+    int departX = positionXIR;
+    int departY = positionYIR;
+    RechercherProchain(plateau, departX, departY, casesVisitees);
+
+    // Marquer les cases à l'intérieur de l'enclos
+    for (int x = 0; x < plateau.GetLength(0); x++)
     {
-        TrouverDepart(plateau, ref departX, ref departY);
-    }
-
-    int retourX = departX;
-    int retourY = departY;
-    int nouveauX = departX;
-    int nouveauY = departY;
-    int[,] directions = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
-    bool toutesDirections = false;
-    bool uneDirection = true;
-    while ((nouveauX != retourX) || (nouveauY != retourY))
-    {
-        if (uneDirection)
+        for (int y = 0; y < plateau.GetLength(1); y++)
         {
-            RechercherProchain(plateau, directions, ref nouveauX, ref nouveauY, ref departX, ref departY, ref uneDirection, ref toutesDirections, casesVisitees);
-        }
-        else if (!toutesDirections)
-        {
-            return false; // Aucune direction valide, on sort
-        }
-    }
-    MarquerCasesEnclos(casesVisitees, casesEnclos);
-
-    return true;
-}
-
-void MarquerCasesEnclos(bool[,] casesVisitees, bool[,] casesEnclos) // Marquer = rendre true
-{
-    int hauteur = plateau.GetLength(0);
-    int largeur = plateau.GetLength(1);
-
-    // On reset casesEnclos à chaque nouvelle itération
-    for (int y = 0; y < hauteur; y++)
-    {
-        for (int x = 0; x < largeur; x++)
-        {
-            casesEnclos[y, x] = false;
-        }
-    }
-
-    // Marquer les crevasses
-    for (int y = 0; y < hauteur; y++)
-    {
-        for (int x = 0; x < largeur; x++)
-        {
-            if (casesVisitees[y, x] && plateau[y, x] == "💥")
-            {
-                casesVisitees[y, x] = true;
-            }
-        }
-    }
-
-    // On marque tout ce qu'il y a à l'intérieur de l'enclos excepté les crevasses
-    for (int y = 0; y < hauteur; y++)
-    {
-        for (int x = 0; x < largeur; x++)
-        {
-            if (casesVisitees[y, x] && plateau[y, x] != "💥")
+            if (casesVisitees[y, x] && plateau[y, x] != "💥")  //On ne compte pas les bordures
             {
                 casesEnclos[y, x] = true;
             }
         }
     }
+    return true;
+}
+// Sous-programme qui recherche par itération les cases blanches à 'intérieur de l'enclos
+bool RechercherProchain(string[,] plateau, int departX, int departY, bool[,] casesVisitees)
+{
+    int hauteur = plateau.GetLength(0);
+    int largeur = plateau.GetLength(1);
+    int[,] directions = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } }; //Directions dans lesquelles rechercher
+
+    // Tableau simulant une file d'attente pour stocker les coordonnées
+    int[,] file = new int[hauteur * largeur, 2]; // Dim 1 = capacité max du tableau, Dim 2=2 pour les coordonnées X et Y
+    int sommetFile = -1;
+
+    // Ajouter le point de départ + le marquer comme visité
+    sommetFile++;
+    file[sommetFile, 0] = departX;
+    file[sommetFile, 1] = departY;
+    casesVisitees[departY, departX] = true;
+
+    while (sommetFile >= 0) // Tant qu'il reste des éléments dans la file d'attente
+    {
+        int x = file[sommetFile, 0];
+        int y = file[sommetFile, 1]; // On récupère ses coordonnées
+        sommetFile--;  // On l'enlève de la file
+
+        // On explore les 4 directions
+        for (int i = 0; i < 4; i++)
+        {
+            int nouveauX = x + directions[i, 1];
+            int nouveauY = y + directions[i, 0]; // Et calculer les nouvelles coordonnées
+
+            // On ignore ce qui est hors des limites du plateau
+            if (nouveauX < 0 || nouveauX >= largeur ||
+                nouveauY < 0 || nouveauY >= hauteur)
+                continue;
+
+            // On ignore les cases déjà visitées et les crevasses
+            if (casesVisitees[nouveauY, nouveauX] ||
+                plateau[nouveauY, nouveauX] == "💥")
+                continue;
+
+            // Si aucun obstacle ou pas déjà visitée, on la marque comme visitée
+            casesVisitees[nouveauY, nouveauX] = true;
+            sommetFile++;
+            file[sommetFile, 0] = nouveauX;
+            file[sommetFile, 1] = nouveauY; // Et on l'ajoute à la file pour explorer les cases qui entourent celle-ci
+        }
+    }
+
+    return true;
 }
 
-bool TrouverDepart(string[,] plateau, ref int x, ref int y)
+bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
 {
-    for (int j = 0; j < plateau.GetLength(1); j++)
+    for (int y = 0; y < plateau.GetLength(0); y++)
     {
-        for (int i = 0; i < plateau.GetLength(0); i++)
+        for (int x = 0; x < plateau.GetLength(1); x++)
         {
-            if (plateau[i, j] == "💥")
+            // On regarde si la case a été vérifiée et qu'elle est bien dans l'enclos
+            if (casesEnclos[y, x] && casesVisitees[y, x])
             {
-                x = j;
-                y = i;
-                return true;
+                // On vérifie si un autre personnage est dans cette case
+                if ((y == positionYBlue && x == positionXBlue) ||
+                    (y == positionYOwen && x == positionXOwen) ||
+                    (y == positionYMaisie && x == positionXMaisie))
+                {
+                    return true; // Si un personnage y est
+                }
             }
         }
     }
-    x = 0;
-    y = 0;
-    return false;
+    return false; // Si aucun autre personnage n'est enfermé
 }
 
-void RechercherProchain(string[,] plateau, int[,] directions, ref int nouveauX, ref int nouveauY, ref int departX, ref int departY, ref bool uneDirection, ref bool toutesDirections, bool[,] casesVisitees)
-{
-    uneDirection = false;
-    for (int i = 0; i < directions.GetLength(0); i++)
-    {
-        nouveauX = departX + directions[i, 1];
-        nouveauY = departY + directions[i, 0];
-
-        if (nouveauX >= plateau.GetLength(0) || nouveauX < 0 ||
-            nouveauY >= plateau.GetLength(1) || nouveauY < 0)
-        {
-            continue; // Ignore les positions hors des limites
-        }
-
-        if (!casesVisitees[nouveauX, nouveauY])
-        {
-            casesVisitees[nouveauX, nouveauY] = true;
-            departX = nouveauX;
-            departY = nouveauY;
-            uneDirection = true;
-            toutesDirections = true;
-        }
-        if (plateau[nouveauX, nouveauY] == "💥")
-        {
-            departX = nouveauX;
-            departY = nouveauY;
-            uneDirection = true;
-            toutesDirections = true;
-        }
-    }
-}
-
-bool VerifierPersonnageEnferme(bool[,] casesEnclos)
-{
-    // On regarde si chaque personnage est sur une case marquée
-    return (casesEnclos[positionYBlue, positionXBlue] ||
-            casesEnclos[positionYOwen, positionXOwen] ||
-            casesEnclos[positionYMaisie, positionXMaisie]);
-}
-
-
-/*Test enclos
+//Test enclos
 positionXIR = 4;
 positionYIR = 4;
 plateau[2, 3] = "💥";
@@ -882,25 +836,5 @@ plateau[4, 2] = "💥";
 plateau[3, 2] = "💥";
 AfficherPlateau(plateau);
 VerifierEnclos(positionXIR, positionYIR);
-*/
-positionXIR = 4;
-positionYIR = 4;
-plateau[0, 8] = "💥";
-plateau[1, 8] = "💥";
-plateau[2, 8] = "💥";
-plateau[3, 8] = "💥";
-plateau[4, 8] = "💥";
-plateau[5, 8] = "💥";
-plateau[5, 7] = "💥";
-plateau[6, 7] = "💥";
-plateau[6, 6] = "💥";
-plateau[6, 5] = "💥";
-plateau[6, 4] = "💥";
-plateau[6, 3] = "💥";
-plateau[5, 3] = "💥";
-plateau[4, 2] = "💥";
-plateau[4, 1] = "💥";
-plateau[4, 0] = "💥";
-AfficherPlateau(plateau);
-VerifierEnclos(positionXIR, positionYIR);
+
 
