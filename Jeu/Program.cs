@@ -1,16 +1,4 @@
-﻿//Valeurs pour tester A SUPPRIMER
-
-int positionYOwen = 0;
-int positionXOwen = 0;
-int positionYIR = 0;
-int positionXIR = 0;
-int positionYMaisie = 0;
-int positionXMaisie = 0;
-int positionYBlue = 0;
-int positionXBlue = 0;
-
-
-//Légende 
+﻿//Légende 
 
 Console.WriteLine("=== Légende ===");
 Console.WriteLine("🟩 : Owen");
@@ -21,13 +9,6 @@ Console.WriteLine("🧨 : Grenade");
 Console.WriteLine("💥 : Crevasse");
 Console.WriteLine("================");
 
-
-//Création plateau
-/*
-int hauteurPlateau;
-int longueurPlateau;
-bool saisieValide;
-*/
 int HauteurPlateau()
 {
     int hauteurPlateau;
@@ -66,40 +47,19 @@ int LongueurPlateau()
     return longueurPlateau;
 }
 
-//int hauteurPlateau = HauteurPlateau();
-//int longueurPlateau = LongueurPlateau();
-
-/*
-Console.Write("Déterminez la hauteur du plateau : ");
-do
-{
-    string saisie = Console.ReadLine()!;
-    saisieValide = int.TryParse(saisie, out hauteurPlateau);
-
-    if (!saisieValide)
-    {
-        Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
-    }
-} while (!saisieValide);
-
-Console.Write("Déterminez la longueur du plateau : ");
-do
-{
-    string saisie = Console.ReadLine()!;
-    saisieValide = int.TryParse(saisie, out longueurPlateau);
-
-    if (!saisieValide)
-    {
-        Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
-    }
-} while (!saisieValide);
-*/
-
 string[,] plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());
 
-
+// Initialisation de départ
+int positionXOwen = 0;
+int positionYOwen = 0;
+int positionXBlue = 0;
+int positionYBlue = 0;
+int positionXIR = 0;
+int positionYIR = 0;
+int positionXMaisie = 0;
+int positionYMaisie = 0;
 int nbGrenade = plateau.GetLength(1);
-int nbGrenadeSpe = 1;
+int nbGrenadeSpe = 0;
 int pdvMaisie = 100;
 int pdvBlue = 100;
 int pdvIR = 10 * nbGrenade;
@@ -472,7 +432,7 @@ void AfficherPlateau(string[,] plateau)
     plateau[positionYIR, positionXIR] = "🟥";
 
     Console.Write("  ");
-    for (int t = 0; t < plateau.GetLength(0); t++)
+    for (int t = 0; t < plateau.GetLength(1); t++)
     {
         Console.Write($"{t} ");
     }
@@ -480,11 +440,10 @@ void AfficherPlateau(string[,] plateau)
     Console.WriteLine();
     for (int i = 0; i < plateau.GetLength(0); i++)
     {
-        Console.Write(i);
+        Console.Write($"{plateau.GetLength(1) * i / plateau.GetLength(1)}");
         for (int j = 0; j < plateau.GetLength(1); j++)
         {
             Console.Write(plateau[i, j]);
-
         }
         Console.WriteLine();
     }
@@ -662,105 +621,6 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 
 }
 
-
-//Tests à supprimer
-
-RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
-AfficherPlateau(plateau);
-
-
-//Partie
-
-void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade)
-{
-
-
-    while (finCroc == false && finGrenade == false && finPv == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
-    {
-
-        DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
-        AfficherPlateau(plateau);
-        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-        if (finCroc)
-        {
-            break; // La partie s'arrête si Maisie est mangée
-        }
-
-        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
-        AfficherPlateau(plateau);
-        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-        if (finCroc)
-        {
-            break; // La partie s'arrête si l'indominus mange un personnage
-        }
-
-        DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
-        AfficherPlateau(plateau);
-
-        if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
-        {
-            PouvoirBlue(ref positionYIR, ref positionXIR);
-            AfficherPlateau(plateau);
-            Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-            if (finCroc)
-            {
-                break; // La partie s'arrête si Owen est mangé
-            }
-        }
-
-        DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
-        AfficherPlateau(plateau);
-        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
-        if (finCroc)
-        {
-            break; // La partie s'arrête si Owen est mangé
-        }
-
-        RecupererGrenadeSpe(positionYOwen, positionXOwen);
-
-        Grenade(positionYOwen, positionXOwen, nbGrenade, ref pdvIR, ref pdvBlue, ref pdvMaisie, ref finGrenade, ref enervement);
-        if (finGrenade || finPv)
-        {
-            break; // La partie s'arrête si un personnage est tué par une grenade
-        }
-    }
-    Console.WriteLine("La partie est finie !");
-}
-
-
-//Commencer une partie
-
-Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie");
-ConsoleKeyInfo key;
-do
-{
-    key = Console.ReadKey(intercept: true);  // Attente d'une touche sans l'afficher
-
-    if (key.Key == ConsoleKey.Enter)
-    {
-        finPv = false;
-        finCroc = false;
-        finGrenade = false;
-        Jeu(ref finPv, ref finCroc, ref finGrenade);
-    }
-
-    Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); // Rejouer quand la partie est terminée 
-    key = Console.ReadKey(intercept: true);
-    if (key.Key == ConsoleKey.Enter)
-    {
-        plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
-        RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
-        pdvIR = 10 * nbGrenade;
-        pdvMaisie = 100;
-        pdvBlue = 100;
-        AfficherPlateau(plateau);
-        Console.WriteLine("Cliquer sur la touche Entrée pour confirmer la taille du plateau");
-    }
-
-}
-while (key.Key == ConsoleKey.Enter);
-
-
 void VerifierEnclos(int positionXIR, int positionYIR)
 {
     int hauteur = plateau.GetLength(0);
@@ -886,26 +746,104 @@ bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
     return false; // Si aucun autre personnage n'est enfermé
 }
 
-//Test enclos
-positionXIR = 4;
-positionYIR = 4;
-plateau[2, 3] = "💥";
-plateau[2, 4] = "💥";
-plateau[2, 5] = "💥";
-plateau[3, 6] = "💥";
-plateau[3, 7] = "💥";
-plateau[3, 8] = "💥";
-plateau[4, 8] = "💥";
-plateau[5, 8] = "💥";
-plateau[5, 7] = "💥";
-plateau[6, 7] = "💥";
-plateau[6, 6] = "💥";
-plateau[6, 5] = "💥";
-plateau[6, 4] = "💥";
-plateau[6, 3] = "💥";
-plateau[5, 3] = "💥";
-plateau[4, 2] = "💥";
-plateau[3, 2] = "💥";
-AfficherPlateau(plateau);
-VerifierEnclos(positionXIR, positionYIR);
+
+
+
+//Commencer une partie
+
+Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie");
+ConsoleKeyInfo key;
+do
+{
+    key = Console.ReadKey(intercept: true);  // Attente d'une touche sans l'afficher
+
+    if (key.Key == ConsoleKey.Enter)
+    {
+        finPv = false;
+        finCroc = false;
+        finGrenade = false;
+        enervement = false;
+        pdvMaisie = 100;
+        pdvBlue = 100;
+        pdvIR = 10 * nbGrenade;
+        nbGrenadeSpe = 0;
+        Jeu(ref finPv, ref finCroc, ref finGrenade, ref positionXOwen, ref positionYOwen, ref positionXBlue, ref positionYBlue, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie);
+    }
+
+    Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); // Rejouer quand la partie est terminée 
+    key = Console.ReadKey(intercept: true);
+    if (key.Key == ConsoleKey.Enter)
+    {
+        plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
+        RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+        pdvIR = 10 * nbGrenade;
+        pdvMaisie = 100;
+        pdvBlue = 100;
+        AfficherPlateau(plateau);
+        Console.WriteLine("Cliquer sur la touche Entrée pour confirmer la taille du plateau");
+    }
+
+}
+while (key.Key == ConsoleKey.Enter);
+
+//Partie
+
+void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXBlue, ref int positionYBlue, ref int positionXMaisie, ref int positionYMaisie)
+{
+
+
+    while (finCroc == false && finGrenade == false && finPv == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
+    {
+
+        DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
+        AfficherPlateau(plateau);
+        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+        if (finCroc)
+        {
+            break; // La partie s'arrête si Maisie est mangée
+        }
+
+        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
+        AfficherPlateau(plateau);
+        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+        if (finCroc)
+        {
+            break; // La partie s'arrête si l'indominus mange un personnage
+        }
+
+        DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
+        AfficherPlateau(plateau);
+
+        if ((positionYBlue == positionYIR) && (positionXBlue == positionXIR))
+        {
+            PouvoirBlue(ref positionYIR, ref positionXIR);
+            AfficherPlateau(plateau);
+            Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+            if (finCroc)
+            {
+                break; // La partie s'arrête si Owen est mangé
+            }
+        }
+
+        DeplacementClavier("🟩", ref positionXOwen, ref positionYOwen, nomOwen);
+        AfficherPlateau(plateau);
+        Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
+        if (finCroc)
+        {
+            break; // La partie s'arrête si Owen est mangé
+        }
+
+        RecupererGrenadeSpe(positionYOwen, positionXOwen);
+
+        Grenade(positionYOwen, positionXOwen, nbGrenade, ref pdvIR, ref pdvBlue, ref pdvMaisie, ref finGrenade, ref enervement);
+        if (finGrenade || finPv)
+        {
+            break; // La partie s'arrête si un personnage est tué par une grenade
+        }
+    }
+    Console.WriteLine("La partie est finie !");
+}
+
+
+
 
