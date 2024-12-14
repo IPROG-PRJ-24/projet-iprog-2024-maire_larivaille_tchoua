@@ -47,9 +47,6 @@ int LongueurPlateau()
     return longueurPlateau;
 }
 
-string[,] plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());
-
-// Initialisation de départ
 int positionXOwen = 0;
 int positionYOwen = 0;
 int positionXBlue = 0;
@@ -58,6 +55,10 @@ int positionXIR = 0;
 int positionYIR = 0;
 int positionXMaisie = 0;
 int positionYMaisie = 0;
+string[,] plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());
+RecupererCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+
+// Initialisation de départ
 int nbGrenade = plateau.GetLength(1);
 int nbGrenadeSpe = 0;
 int pdvMaisie = 100;
@@ -73,6 +74,7 @@ bool enervement = false;
 bool finPv = false;
 bool finCroc = false;
 bool finGrenade = false;
+bool finEnclos = false;
 
 // Lancer ou non d'une grenade, spéciale ou non
 
@@ -462,7 +464,7 @@ int TirerNbAléatoire(int max)
 
 //Récupérer les coordonnées des personnages
 
-void RécupérerCoord(string[,] plateau, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXMaisie, ref int positionYMaisie, ref int positionXBlue, ref int positionYBlue)
+void RecupererCoord(string[,] plateau, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXMaisie, ref int positionYMaisie, ref int positionXBlue, ref int positionYBlue)
 {
     for (int i = 0; i < plateau.GetLength(0); i++)
     {
@@ -621,7 +623,9 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 
 }
 
-void VerifierEnclos(int positionXIR, int positionYIR)
+// Verifie la présence d'un enclos et si un personnage est enfermé dedans
+
+bool VerifierEnclos(int positionXIR, int positionYIR)
 {
     int hauteur = plateau.GetLength(0);
     int largeur = plateau.GetLength(1);
@@ -637,44 +641,62 @@ void VerifierEnclos(int positionXIR, int positionYIR)
         if (autrePersonnageEnferme)
         {
             Console.WriteLine("Perdu ! Quelqu'un est enfermé avec l'IR");
+            return false;
         }
         else
         {
             Console.WriteLine("Bien joué ! Tu as enfermé l'IR");
+            return true;
         }
     }
     else
     {
         Console.WriteLine("Pas d'enclos");
+        return false;
     }
 }
 
-
+// Cherche s'il y a un enclos et retourne true si c'est le cas
 
 bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, bool[,] casesVisitees)
 {
     int hauteur = plateau.GetLength(0);
     int largeur = plateau.GetLength(1);
+    int compt = 0;
 
     // On démarre de la position de l'IR
     int departX = positionXIR;
     int departY = positionYIR;
     RechercherProchain(plateau, departX, departY, casesVisitees);
 
-    // Marquer les cases à l'intérieur de l'enclos
-    for (int x = 0; x < plateau.GetLength(0); x++)
+    // Si il n'y a aucune bombe ce n'est pas un enclos
+    for (int i = 0; i < plateau.GetLength(0); i++)
     {
-        for (int y = 0; y < plateau.GetLength(1); y++)
+        for (int j = 0; j < plateau.GetLength(1); j++)
         {
-            if (casesVisitees[y, x] && plateau[y, x] != "💥")  //On ne compte pas les bordures
+            if (plateau[i, j] != "💥")
+                compt++;
+        }
+    }
+    if (compt == plateau.GetLength(0) * plateau.GetLength(1))
+        return false;
+
+    // Marquer les cases à l'intérieur de l'enclos
+    for (int i = 0; i < plateau.GetLength(0) - positionXIR; i++)
+    {
+        for (int j = 0; j < plateau.GetLength(1) - positionYIR; j++)
+        {
+            if (casesVisitees[j, i] && plateau[j, i] != "💥")  //On ne compte pas les bordures
             {
-                casesEnclos[y, x] = true;
+                casesEnclos[j, i] = true;
             }
         }
     }
     return true;
 }
-// Sous-programme qui recherche par itération les cases blanches à 'intérieur de l'enclos
+
+// Sous-programme qui recherche par itération les cases blanches à 'intérieur de l'enclos et rempli les tableaux casesEnclos et casesVisitees
+
 bool RechercherProchain(string[,] plateau, int departX, int departY, bool[,] casesVisitees)
 {
     int hauteur = plateau.GetLength(0);
@@ -724,6 +746,8 @@ bool RechercherProchain(string[,] plateau, int departX, int departY, bool[,] cas
     return true;
 }
 
+//Vérifie si autre personnage est dans l'enclos
+
 bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
 {
     for (int y = 0; y < plateau.GetLength(0); y++)
@@ -750,7 +774,6 @@ bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
 
 
 //Commencer une partie
-
 Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie");
 ConsoleKeyInfo key;
 do
@@ -767,7 +790,7 @@ do
         pdvBlue = 100;
         pdvIR = 10 * nbGrenade;
         nbGrenadeSpe = 0;
-        Jeu(ref finPv, ref finCroc, ref finGrenade, ref positionXOwen, ref positionYOwen, ref positionXBlue, ref positionYBlue, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie);
+        Jeu(ref finPv, ref finCroc, ref finGrenade, ref finEnclos, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXBlue, ref positionYBlue, ref positionXMaisie, ref positionYMaisie);
     }
 
     Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); // Rejouer quand la partie est terminée 
@@ -775,7 +798,7 @@ do
     if (key.Key == ConsoleKey.Enter)
     {
         plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
-        RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+        RecupererCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
         pdvIR = 10 * nbGrenade;
         pdvMaisie = 100;
         pdvBlue = 100;
@@ -786,13 +809,14 @@ do
 }
 while (key.Key == ConsoleKey.Enter);
 
+
 //Partie
 
-void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXBlue, ref int positionYBlue, ref int positionXMaisie, ref int positionYMaisie)
+void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref bool finEnclos, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXBlue, ref int positionYBlue, ref int positionXMaisie, ref int positionYMaisie)
 {
 
 
-    while (finCroc == false && finGrenade == false && finPv == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
+    while (finCroc == false && finGrenade == false && finPv == false && finEnclos == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
     {
 
         DeplacementAleatoire("🟪", ref positionXMaisie, ref positionYMaisie);
@@ -800,7 +824,7 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref int position
         Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
         if (finCroc)
         {
-            break; // La partie s'arrête si Maisie est mangée
+            return; // La partie s'arrête si Maisie est mangée
         }
 
         DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
@@ -808,7 +832,7 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref int position
         Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
         if (finCroc)
         {
-            break; // La partie s'arrête si l'indominus mange un personnage
+            return; // La partie s'arrête si l'indominus mange un personnage
         }
 
         DeplacementClavier("🟦", ref positionXBlue, ref positionYBlue, nomBlue);
@@ -821,7 +845,7 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref int position
             Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
             if (finCroc)
             {
-                break; // La partie s'arrête si Owen est mangé
+                return; // La partie s'arrête si Owen est mangé
             }
         }
 
@@ -830,7 +854,7 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref int position
         Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
         if (finCroc)
         {
-            break; // La partie s'arrête si Owen est mangé
+            return; // La partie s'arrête si Owen est mangé
         }
 
         RecupererGrenadeSpe(positionYOwen, positionXOwen);
@@ -838,8 +862,9 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref int position
         Grenade(positionYOwen, positionXOwen, nbGrenade, ref pdvIR, ref pdvBlue, ref pdvMaisie, ref finGrenade, ref enervement);
         if (finGrenade || finPv)
         {
-            break; // La partie s'arrête si un personnage est tué par une grenade
+            return; // La partie s'arrête si un personnage est tué par une grenade
         }
+        finEnclos = VerifierEnclos(positionXIR, positionYIR);
     }
     Console.WriteLine("La partie est finie !");
 }
