@@ -86,11 +86,24 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
     int randomY = 0;
     int randomX = 0;
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
-    string reponse = Console.ReadLine()!;
+    string reponse;
+    do
+    {
+        Console.WriteLine("Entrez Oui ou Non");
+        reponse = Console.ReadLine()!;
+    }
+    while (!Enum.TryParse(reponse, out ChoixGrenade resultat));
+
     if (reponse == "Oui" || reponse == "oui")
     {
+        string type;
         Console.WriteLine("Tapez 'S' pour lancer une grenade spéciale ou 'N' pour une grenade normale ?");
-        string type = Console.ReadLine()!;
+        do
+        {
+            Console.WriteLine("Entrez S ou N");
+            type = Console.ReadLine()!;
+        }
+        while (!Enum.TryParse(type, out ChoixType resultat));
 
         if (type == "S" || type == "s")
         {
@@ -181,8 +194,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
             }
             else
             {
-                Console.WriteLine("Vous n'avez plus de grenade spéciale");
-                Console.WriteLine("Voulez vous lancer une grenade normale? (si oui, répondre 'N')");
+                Console.WriteLine("Vous n'avez plus de grenade spéciale, dommage !");
             }
         }
 
@@ -265,11 +277,33 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
 //Entrer les coordonnées de la Grenade
 void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
 {
+    bool saisieValide;
+    string saisie;
     Console.WriteLine("Sélectionnez où lancer la grenade:");
     Console.WriteLine("Entrez le numéro de ligne :");
-    coorYGrenade = Convert.ToInt32(Console.ReadLine()!);
+    do
+    {
+        saisie = Console.ReadLine()!;
+        saisieValide = int.TryParse(saisie, out coorYGrenade);
+
+        if (!saisieValide)
+        {
+            Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
+        }
+    } while (!saisieValide);
+    coorYGrenade = coorYGrenade;
     Console.WriteLine("Entrez le numéro de colonne :");
-    coorXGrenade = Convert.ToInt32(Console.ReadLine()!);
+    do
+    {
+        saisie = Console.ReadLine()!;
+        saisieValide = int.TryParse(saisie, out coorXGrenade);
+
+        if (!saisieValide)
+        {
+            Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
+        }
+    } while (!saisieValide);
+    coorXGrenade = coorXGrenade;
 }
 
 //Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
@@ -669,7 +703,7 @@ bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, boo
     int departY = positionYIR;
     RechercherProchain(plateau, departX, departY, casesVisitees);
 
-    // Si il n'y a aucune bombe ce n'est pas un enclos
+    // Compte le nombre de crevasses sur le plateau
     for (int i = 0; i < plateau.GetLength(0); i++)
     {
         for (int j = 0; j < plateau.GetLength(1); j++)
@@ -678,6 +712,7 @@ bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, boo
                 compt++;
         }
     }
+    // Si il n'y a aucune crevasse ce n'est pas un enclos
     if (compt == plateau.GetLength(0) * plateau.GetLength(1))
         return false;
 
@@ -686,7 +721,7 @@ bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, boo
     {
         for (int j = 0; j < plateau.GetLength(1) - positionYIR; j++)
         {
-            if (casesVisitees[j, i] && plateau[j, i] != "💥")  //On ne compte pas les bordures
+            if (casesVisitees[j, i] && plateau[j, i] != "💥")  //On ne compte pas les bordures de l'enclos
             {
                 casesEnclos[j, i] = true;
             }
@@ -769,7 +804,6 @@ bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
     }
     return false; // Si aucun autre personnage n'est enfermé
 }
-
 
 
 
@@ -869,6 +903,20 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref bool finEncl
     Console.WriteLine("La partie est finie !");
 }
 
-
+// Choix
+enum ChoixGrenade
+{
+    Oui,
+    oui,
+    Non,
+    non
+}
+enum ChoixType
+{
+    S,
+    s,
+    N,
+    n,
+}
 
 
