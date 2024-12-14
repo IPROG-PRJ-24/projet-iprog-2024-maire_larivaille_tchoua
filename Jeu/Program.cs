@@ -119,7 +119,7 @@ bool finGrenade = false;
 void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR, ref int pdvBlue, ref int pdvMaisie, ref bool finGrenade, ref bool enervement)
 {
 
-    int coorYGrenade = 900;
+    int coorYGrenade = 900; //Pour éviter les problèmes d'assignement
     int coorXGrenade = 900;
     int randomY = 0;
     int randomX = 0;
@@ -314,7 +314,7 @@ void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
 
 void SystèmePV(ref int pV, string nom, string owen)
 {
-    
+
     pV -= 50;
     if (pV == 0)
     {
@@ -674,7 +674,7 @@ AfficherPlateau(plateau);
 void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade)
 {
 
-    
+
     while (finCroc == false && finGrenade == false && finPv == false) // La partie continue tant que les conditions d'échec ne sont pas vérifiées 
     {
 
@@ -686,7 +686,7 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade)
             break; // La partie s'arrête si Maisie est mangée
         }
 
-        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);  
+        DeplacementAleatoire("🟥", ref positionXIR, ref positionYIR);
         AfficherPlateau(plateau);
         Croquer(positionYIR, positionXIR, positionYOwen, positionXOwen, positionYMaisie, positionXMaisie, ref finCroc);
         if (finCroc)
@@ -735,30 +735,177 @@ ConsoleKeyInfo key;
 do
 {
     key = Console.ReadKey(intercept: true);  // Attente d'une touche sans l'afficher
-   
+
     if (key.Key == ConsoleKey.Enter)
     {
         finPv = false;
         finCroc = false;
         finGrenade = false;
-        Jeu(ref finPv, ref finCroc,  ref finGrenade);
+        Jeu(ref finPv, ref finCroc, ref finGrenade);
     }
 
     Console.WriteLine("Cliquer sur la touche Entrée pour commencer une partie"); // Rejouer quand la partie est terminée 
-    key = Console.ReadKey(intercept: true); 
+    key = Console.ReadKey(intercept: true);
     if (key.Key == ConsoleKey.Enter)
     {
         plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
-        RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue); 
+        RécupérerCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
         pdvIR = 10 * nbGrenade;
         pdvMaisie = 100;
         pdvBlue = 100;
         AfficherPlateau(plateau);
         Console.WriteLine("Cliquer sur la touche Entrée pour confirmer la taille du plateau");
     }
-    
+
 }
 while (key.Key == ConsoleKey.Enter);
 
 
+void VerifierEnclos(int positionXIR, int positionYIR)
+{
+    int hauteur = plateau.GetLength(0);
+    int largeur = plateau.GetLength(1);
+    bool[,] casesEnclos = new bool[hauteur, largeur];  // Va enregistrer les cases qui font partie de l'enclos
+    bool[,] casesVisitees = new bool[plateau.GetLength(0), plateau.GetLength(1)];  // Va enregistrer les cases qui ont été visitées par l'itération
+
+    bool enclosFerme = RechercherEnclos(positionXIR, positionYIR, casesEnclos, casesVisitees);
+
+    if (enclosFerme)
+    {
+        bool autrePersonnageEnferme = VerifierPersonnageEnferme(casesEnclos, casesVisitees);
+
+        if (autrePersonnageEnferme)
+        {
+            Console.WriteLine("Perdu ! Quelqu'un est enfermé avec l'IR");
+        }
+        else
+        {
+            Console.WriteLine("Bien joué ! Tu as enfermé l'IR");
+        }
+    }
+    else
+    {
+        Console.WriteLine("Pas d'enclos");
+    }
+}
+
+
+
+bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, bool[,] casesVisitees)
+{
+    int hauteur = plateau.GetLength(0);
+    int largeur = plateau.GetLength(1);
+
+    // On démarre de la position de l'IR
+    int departX = positionXIR;
+    int departY = positionYIR;
+    RechercherProchain(plateau, departX, departY, casesVisitees);
+
+    // Marquer les cases à l'intérieur de l'enclos
+    for (int x = 0; x < plateau.GetLength(0); x++)
+    {
+        for (int y = 0; y < plateau.GetLength(1); y++)
+        {
+            if (casesVisitees[y, x] && plateau[y, x] != "💥")  //On ne compte pas les bordures
+            {
+                casesEnclos[y, x] = true;
+            }
+        }
+    }
+    return true;
+}
+// Sous-programme qui recherche par itération les cases blanches à 'intérieur de l'enclos
+bool RechercherProchain(string[,] plateau, int departX, int departY, bool[,] casesVisitees)
+{
+    int hauteur = plateau.GetLength(0);
+    int largeur = plateau.GetLength(1);
+    int[,] directions = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } }; //Directions dans lesquelles rechercher
+
+    // Tableau simulant une file d'attente pour stocker les coordonnées
+    int[,] file = new int[hauteur * largeur, 2]; // Dim 1 = capacité max du tableau, Dim 2=2 pour les coordonnées X et Y
+    int sommetFile = -1;
+
+    // Ajouter le point de départ + le marquer comme visité
+    sommetFile++;
+    file[sommetFile, 0] = departX;
+    file[sommetFile, 1] = departY;
+    casesVisitees[departY, departX] = true;
+
+    while (sommetFile >= 0) // Tant qu'il reste des éléments dans la file d'attente
+    {
+        int x = file[sommetFile, 0];
+        int y = file[sommetFile, 1]; // On récupère ses coordonnées
+        sommetFile--;  // On l'enlève de la file
+
+        // On explore les 4 directions
+        for (int i = 0; i < 4; i++)
+        {
+            int nouveauX = x + directions[i, 1];
+            int nouveauY = y + directions[i, 0]; // Et calculer les nouvelles coordonnées
+
+            // On ignore ce qui est hors des limites du plateau
+            if (nouveauX < 0 || nouveauX >= largeur ||
+                nouveauY < 0 || nouveauY >= hauteur)
+                continue;
+
+            // On ignore les cases déjà visitées et les crevasses
+            if (casesVisitees[nouveauY, nouveauX] ||
+                plateau[nouveauY, nouveauX] == "💥")
+                continue;
+
+            // Si aucun obstacle ou pas déjà visitée, on la marque comme visitée
+            casesVisitees[nouveauY, nouveauX] = true;
+            sommetFile++;
+            file[sommetFile, 0] = nouveauX;
+            file[sommetFile, 1] = nouveauY; // Et on l'ajoute à la file pour explorer les cases qui entourent celle-ci
+        }
+    }
+
+    return true;
+}
+
+bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
+{
+    for (int y = 0; y < plateau.GetLength(0); y++)
+    {
+        for (int x = 0; x < plateau.GetLength(1); x++)
+        {
+            // On regarde si la case a été vérifiée et qu'elle est bien dans l'enclos
+            if (casesEnclos[y, x] && casesVisitees[y, x])
+            {
+                // On vérifie si un autre personnage est dans cette case
+                if ((y == positionYBlue && x == positionXBlue) ||
+                    (y == positionYOwen && x == positionXOwen) ||
+                    (y == positionYMaisie && x == positionXMaisie))
+                {
+                    return true; // Si un personnage y est
+                }
+            }
+        }
+    }
+    return false; // Si aucun autre personnage n'est enfermé
+}
+
+//Test enclos
+positionXIR = 4;
+positionYIR = 4;
+plateau[2, 3] = "💥";
+plateau[2, 4] = "💥";
+plateau[2, 5] = "💥";
+plateau[3, 6] = "💥";
+plateau[3, 7] = "💥";
+plateau[3, 8] = "💥";
+plateau[4, 8] = "💥";
+plateau[5, 8] = "💥";
+plateau[5, 7] = "💥";
+plateau[6, 7] = "💥";
+plateau[6, 6] = "💥";
+plateau[6, 5] = "💥";
+plateau[6, 4] = "💥";
+plateau[6, 3] = "💥";
+plateau[5, 3] = "💥";
+plateau[4, 2] = "💥";
+plateau[3, 2] = "💥";
+AfficherPlateau(plateau);
+VerifierEnclos(positionXIR, positionYIR);
 
