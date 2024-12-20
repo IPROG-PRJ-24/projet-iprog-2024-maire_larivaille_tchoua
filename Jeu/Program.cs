@@ -9,7 +9,7 @@ Console.WriteLine("🧨 : Grenade");
 Console.WriteLine("💥 : Crevasse");
 Console.WriteLine("================");
 
-int HauteurPlateau()
+int DemanderHauteurPlateau()
 {
     int hauteurPlateau;
     bool saisieValide;
@@ -28,7 +28,7 @@ int HauteurPlateau()
     return hauteurPlateau;
 }
 
-int LongueurPlateau()
+int DemanderLongueurPlateau()
 {
     int longueurPlateau;
     bool saisieValide;
@@ -55,7 +55,7 @@ int positionXIR = 0;
 int positionYIR = 0;
 int positionXMaisie = 0;
 int positionYMaisie = 0;
-string[,] plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());
+string[,] plateau = CréerPlateau(DemanderHauteurPlateau(), DemanderLongueurPlateau());
 RecupererCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
 
 // Initialisation de départ
@@ -274,7 +274,9 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
     Console.WriteLine($"Il vous reste {nbGrenade} grenade(s) et {nbGrenadeSpe} grenade(s) spéciale(s).");
 }
 
+
 //Entrer les coordonnées de la Grenade
+
 void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
 {
     bool saisieValide;
@@ -306,6 +308,7 @@ void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
     coorXGrenade = coorXGrenade;
 }
 
+
 //Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
 
 void SystèmePV(ref int pV, string nom, string owen)
@@ -328,55 +331,69 @@ void SystèmePV(ref int pV, string nom, string owen)
 
 void PouvoirBlue(ref int positionYIR, ref int positionXIR) // Lancé que si Blue et IR en même position
 {
-    plateau[positionYIR, positionXIR] = "⬜"; // Supprimer le caractère I du plateau aux anciennes positions
-    Console.WriteLine("Sélectionnez la direction dans laquelle envoyer l'IR: Nord, Sud, Est ou Ouest ?");
-    string direction = Console.ReadLine()!;
-    if (direction == "Ouest" || direction == "ouest")
-    {
-        for (int i = 1; i <= 3; i++)
-        {
-            if ((positionXIR - i < 0) || (plateau[positionYIR, positionXIR - i] == "💥")) // Si on dépasse les limites du plateau ou qu'une crevasse est atteinte
-                positionXIR -= (i - 1);
+    plateau[positionYIR, positionXIR] = "⬜"; //Réinitialise l'ancienne position de l'IR
+    bool directionValide;
+    int deltaX = 0, deltaY = 0; // Déplacement relatif
+    int tentativeX = positionXIR;
+    int tentativeY = positionYIR;
 
-        }
-        //Si absence de crevasse et de bordure
-        if ((positionXIR - 3 >= 0) && (plateau[positionYIR, positionXIR - 1] != "💥") && (plateau[positionYIR, positionXIR - 2] != "💥") && (plateau[positionYIR, positionXIR - 3] != "💥"))
-            positionXIR -= 3;
-    }
-    else if (direction == "Est" || direction == "est")
+    //Verification de la validité de la saisie
+    do  
     {
-        for (int i = 1; i <= 3; i++)
-        {
-            if ((positionXIR + i >= plateau.GetLength(1) - 1) || (plateau[positionYIR, positionXIR + i] == "💥"))
-                positionXIR += (i - 1);
+        Console.WriteLine("Sélectionnez la direction dans laquelle envoyer l'IR: Nord, Sud, Est ou Ouest ?");
+        string direction = Console.ReadLine()!;
 
+        if (direction.Equals("Ouest", StringComparison.OrdinalIgnoreCase) && positionXIR != 0)  //Pour le déplacer vers l'ouest, l'IR ne doit pas etre dans la première colonne du plateau
+        {                                                                                       
+            deltaX = -1;
+            directionValide = true;
         }
-        if ((positionXIR + 3 < plateau.GetLength(1)) && (plateau[positionYIR, positionXIR + 1] != "💥") && (plateau[positionYIR, positionXIR + 2] != "💥") && (plateau[positionYIR, positionXIR + 3] != "💥"))
-            positionXIR += 3;
-    }
+        else if (direction.Equals("Est", StringComparison.OrdinalIgnoreCase) && positionXIR != (plateau.GetLength(1)-1))  //Pour le déplacer vers l'est, l'IR ne doit pas etre dans la dernière colonne du plateau
+        {
+            deltaX = 1;
+            directionValide = true;
+        }
+        else if (direction.Equals("Nord", StringComparison.OrdinalIgnoreCase) && positionYIR != 0) //Pour le déplacer vers le nord, l'IR ne doit pas etre dans la première ligne du plateau
+        {
+            deltaY = -1;
+            directionValide = true;
+        }
+        else if (direction.Equals("Sud", StringComparison.OrdinalIgnoreCase) && positionYIR != (plateau.GetLength(0)-1)) //Pour le déplacer vers le sud, l'IR ne doit pas etre dans la dernière ligne du plateau
+        {
+            deltaY = 1;
+            directionValide = true;
+        }
+        else
+        {
+            Console.WriteLine("Direction invalide !");
+            directionValide = false;
+        }
+    } while (directionValide == false);
 
-    else if (direction == "Sud" || direction == "sud")
+    // Calcul du déplacement maximal (3 cases ou jusqu'à un obstacle)
+    for (int i = 1; i <= 3; i++)
     {
-        for (int i = 1; i <= 3; i++)
+        tentativeX = positionXIR + deltaX * i;
+        tentativeY = positionYIR + deltaY * i;
+
+        // Vérifier les limites du plateau et les obstacles
+        if (tentativeX < 0 || tentativeX >= plateau.GetLength(1) ||
+            tentativeY < 0 || tentativeY >= plateau.GetLength(0) ||
+            plateau[tentativeY, tentativeX] == "💥")
         {
-            if ((positionYIR + i >= plateau.GetLength(0) - 1) || (plateau[positionYIR + i, positionXIR] == "💥"))
-                positionYIR += (i - 1);
+            // Si la limite ou un obstacle est atteint, ne pas aller plus loin
+            tentativeX = positionXIR + deltaX * (i - 1);
+            tentativeY = positionYIR + deltaY * (i - 1);
+            i = 4; // Forcer la fin de la boucle
         }
-        if ((positionYIR + 3 < plateau.GetLength(1)) && (plateau[positionYIR + 1, positionXIR] != "💥") && (plateau[positionYIR + 2, positionXIR] != "💥") && (plateau[positionYIR + 3, positionXIR] != "💥"))
-            positionYIR += 3;
     }
 
-    else if (direction == "Nord" || direction == "nord")
-    {
-        for (int i = 1; i <= 3; i++)
-        {
-            if ((positionYIR - i < 0) || (plateau[positionYIR - i, positionXIR] == "💥"))
-                positionYIR -= (i - 1);
-        }
-        if ((positionYIR - 3 >= 0) && (plateau[positionYIR - 1, positionXIR] != "💥") && (plateau[positionYIR - 2, positionXIR] != "💥") && (plateau[positionYIR - 3, positionXIR] != "💥"))
-            positionYIR -= 3;
-    }
-    plateau[positionYIR, positionXIR] = "🟥"; // Positionner I aux nouvelles coor
+    // Mettre à jour la position finale
+    positionXIR = tentativeX;
+    positionYIR = tentativeY;
+
+    // Positionner IR aux nouvelles coordonnées
+    plateau[positionYIR, positionXIR] = "🟥";
 }
 
 
@@ -401,17 +418,6 @@ void Croquer(int positionYIR, int positionXIR, int positionYOwen, int positionXO
         Console.WriteLine("Bien joué ! Personne n'a été croqué.e ");
 }
 
-//Recuperer grenade
-
-void RecupererGrenadeSpe(int positionYOwen, int positionXOwen)
-{
-    if (plateau[positionYOwen, positionXOwen] == "🧨")
-    {
-        nbGrenadeSpe += 1;
-        Console.WriteLine("Vous avez récupéré une grenade spéciale");
-    }
-    plateau[positionYOwen, positionXOwen] = "🟩";
-}
 
 //Création du plateau
 string[,] CréerPlateau(int dim1, int dim2)
@@ -585,7 +591,6 @@ void DeplacementAleatoire(string personnage, ref int x, ref int y)
 }
 
 
-
 // Déplacements clavier de Owen et Blue
 
 void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
@@ -657,6 +662,7 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 
 }
 
+
 // Verifie la présence d'un enclos et si un personnage est enfermé dedans
 
 bool VerifierEnclos(int positionXIR, int positionYIR)
@@ -689,6 +695,7 @@ bool VerifierEnclos(int positionXIR, int positionYIR)
         return false;
     }
 }
+
 
 // Cherche s'il y a un enclos et retourne true si c'est le cas
 
@@ -729,6 +736,7 @@ bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, boo
     }
     return true;
 }
+
 
 // Sous-programme qui recherche par itération les cases blanches à 'intérieur de l'enclos et rempli les tableaux casesEnclos et casesVisitees
 
@@ -781,6 +789,7 @@ bool RechercherProchain(string[,] plateau, int departX, int departY, bool[,] cas
     return true;
 }
 
+
 //Vérifie si autre personnage est dans l'enclos
 
 bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
@@ -831,8 +840,12 @@ do
     key = Console.ReadKey(intercept: true);
     if (key.Key == ConsoleKey.Enter)
     {
-        plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
+        plateau = CréerPlateau(DemanderHauteurPlateau(), DemanderLongueurPlateau());    // Réinitialise le plateau en début de partie
         RecupererCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+        finPv = false;
+        finCroc = false;
+        finGrenade = false;
+        enervement = false;
         pdvIR = 10 * nbGrenade;
         pdvMaisie = 100;
         pdvBlue = 100;
@@ -890,8 +903,6 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref bool finEncl
         {
             return; // La partie s'arrête si Owen est mangé
         }
-
-        RecupererGrenadeSpe(positionYOwen, positionXOwen);
 
         Grenade(positionYOwen, positionXOwen, nbGrenade, ref pdvIR, ref pdvBlue, ref pdvMaisie, ref finGrenade, ref enervement);
         if (finGrenade || finPv)
