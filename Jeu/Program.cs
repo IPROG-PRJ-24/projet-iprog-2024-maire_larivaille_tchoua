@@ -1,4 +1,5 @@
-﻿//Légende 
+﻿
+//Légende 
 
 Console.WriteLine("=== Légende ===");
 Console.WriteLine("🟩 : Owen");
@@ -78,13 +79,14 @@ bool finEnclos = false;
 
 // Lancer ou non d'une grenade, spéciale ou non
 
-void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR, ref int pdvBlue, ref int pdvMaisie, ref bool finGrenade, ref bool enervement)
+void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pdvIR, ref int pdvBlue, ref int pdvMaisie, ref bool finGrenade, ref bool enervement, ref int nbGrenadeSpe)
 {
 
     int coorYGrenade = 900; //Pour éviter les problèmes d'assignement
     int coorXGrenade = 900;
     int randomY = 0;
     int randomX = 0;
+    Console.WriteLine($"Il vous reste {nbGrenade} grenade(s) et {nbGrenadeSpe} grenade(s) spéciale(s).");
     Console.WriteLine("Lancer une grenade? (répondre Oui ou Non)");
     string reponse;
     do
@@ -111,14 +113,14 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
             {
                 nbGrenadeSpe -= 1;
                 SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
-                if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
+                while ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0) || (coorXGrenade == positionXOwen) && (coorYGrenade == positionYOwen) || (coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
                 {
-                    Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
-                    SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
-                }
-                while ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
-                {
-                    Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
+                    if ((coorXGrenade == positionXOwen) && (coorYGrenade == positionYOwen))
+                        Console.WriteLine("Impossible, Owen ne peut pas se lancer de grenade dessus");
+                    if ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
+                        Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
+                    if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
+                        Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
                     SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 }
                 if ((coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3) || (coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3))
@@ -151,7 +153,12 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                     else // sinon on crée une crevasse
                     {
                         plateau[coorYGrenade, coorXGrenade] = "💥";
-                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX <= plateau.GetLength(1) - 1) || (coorYGrenade + randomY <= plateau.GetLength(0) - 1) || (coorXGrenade + randomX > 0) || (coorYGrenade + randomY > 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit et prendre en compte les bordures
+                        do
+                        {
+                            randomY = rng.Next(-1, 2);
+                            randomX = rng.Next(-1, 2);
+                        }
+                        while ((randomY == 0) && (randomX == 0) && !EstDansLimites(coorXGrenade + randomX, coorYGrenade + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit et prendre en compte les bordures
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
@@ -173,7 +180,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
-                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenadeSpe + randomX <= plateau.GetLength(1) - 1) || (coorYGrenadeSpe + randomY <= plateau.GetLength(0) - 1) || (coorXGrenadeSpe + randomX > 0) || (coorYGrenadeSpe + randomY > 0))); // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        while ((randomY == 0) && (randomX == 0) && !EstDansLimites(coorXGrenadeSpe + randomX, coorYGrenadeSpe + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
@@ -190,7 +197,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                     }
 
                 }
-
+                AfficherPlateau(plateau);
             }
             else
             {
@@ -204,16 +211,17 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
             {
                 nbGrenade -= 1;
                 SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
-                if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
+                while ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0) || (coorXGrenade == positionXOwen) && (coorYGrenade == positionYOwen) || (coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
                 {
-                    Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
+                    if ((coorXGrenade == positionXOwen) && (coorYGrenade == positionYOwen))
+                        Console.WriteLine("Impossible, Owen ne peut pas se lancer de grenade dessus");
+                    if ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
+                        Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
+                    if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
+                        Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
                     SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 }
-                while ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
-                {
-                    Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
-                    SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
-                }
+
                 if ((coorYGrenade <= positionYOwen + 3) || (coorYGrenade >= positionYOwen - 3) || (coorXGrenade <= positionXOwen + 3) || (coorXGrenade >= positionXOwen - 3))
                 {
                     if (plateau[coorYGrenade, coorXGrenade] == "🟥") // Savoir si l'IR a été touchée et lui enlever des pv et pas de crevasse
@@ -244,7 +252,12 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                     else // sinon on crée une crevasse
                     {
                         plateau[coorYGrenade, coorXGrenade] = "💥";
-                        while ((randomY == 0) && (randomX == 0) && ((coorXGrenade + randomX <= plateau.GetLength(1) - 1) || (coorYGrenade + randomY <= plateau.GetLength(0) - 1) || (coorXGrenade + randomX > 0) || (coorYGrenade + randomY > 0))) // Pour éviter que la case random soit la même que celle où la grenade atterit
+                        do
+                        {
+                            randomY = rng.Next(-1, 2);
+                            randomX = rng.Next(-1, 2);
+                        }
+                        while ((randomY == 0) && (randomX == 0) && !EstDansLimites(coorXGrenade + randomX, coorYGrenade + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit
                         {
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
@@ -261,6 +274,7 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
                             plateau[coorYGrenade + randomY, coorXGrenade + randomX] = "💥";
                     }
                 }
+                AfficherPlateau(plateau);
             }
             if (nbGrenade == 0)
                 Console.WriteLine("Vous n'avez plus de grenades, bonne chance!");
@@ -270,8 +284,13 @@ void Grenade(int positionYOwen, int positionXOwen, int nbGrenade, ref int pdvIR,
     {
         Console.WriteLine("Owen ne lance pas de grenade.");
     }
-    AfficherPlateau(plateau);
     Console.WriteLine($"Il vous reste {nbGrenade} grenade(s) et {nbGrenadeSpe} grenade(s) spéciale(s).");
+}
+
+bool EstDansLimites(int x, int y, string[,] plateau)
+{
+    return x >= 0 && x < plateau.GetLength(1) &&
+           y >= 0 && y < plateau.GetLength(0);
 }
 
 //Entrer les coordonnées de la Grenade
@@ -291,7 +310,7 @@ void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
             Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
         }
     } while (!saisieValide);
-    coorYGrenade = coorYGrenade;
+    coorYGrenade = Convert.ToInt32(saisie);
     Console.WriteLine("Entrez le numéro de colonne :");
     do
     {
@@ -303,7 +322,7 @@ void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
             Console.WriteLine("Saisie invalide. Veuillez entrer un entier.");
         }
     } while (!saisieValide);
-    coorXGrenade = coorXGrenade;
+    coorXGrenade = Convert.ToInt32(saisie);
 }
 
 //Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
@@ -657,152 +676,62 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
 
 }
 
-// Verifie la présence d'un enclos et si un personnage est enfermé dedans
-
-bool VerifierEnclos(int positionXIR, int positionYIR)
+// Vérifie si l'IR est n'a aucun moyen d'accéder à Owen et si un personnage est présent où non dans l'enclos
+void TesterEnclos(ref string[,] plateau, ref int positionXOwen, ref int positionYOwen, ref int positionXIR, ref int positionYIR, ref int positionXBlue, ref int positionYBlue, ref int positionXMaisie, ref int positionYMaisie)
 {
-    int hauteur = plateau.GetLength(0);
-    int largeur = plateau.GetLength(1);
-    bool[,] casesEnclos = new bool[hauteur, largeur];  // Va enregistrer les cases qui font partie de l'enclos
-    bool[,] casesVisitees = new bool[plateau.GetLength(0), plateau.GetLength(1)];  // Va enregistrer les cases qui ont été visitées par l'itération
+    bool[,] casesVisitees = new bool[plateau.GetLength(0), plateau.GetLength(1)];
 
-    bool enclosFerme = RechercherEnclos(positionXIR, positionYIR, casesEnclos, casesVisitees);
+    //Vérifier si l'IR est isolée d'Owen
+    ExplorerZone(positionXIR, positionYIR, plateau, casesVisitees);
 
-    if (enclosFerme)
+    if (casesVisitees[positionYOwen, positionXOwen])
     {
-        bool autrePersonnageEnferme = VerifierPersonnageEnferme(casesEnclos, casesVisitees);
-
-        if (autrePersonnageEnferme)
-        {
-            Console.WriteLine("Perdu ! Quelqu'un est enfermé avec l'IR");
-            return false;
-        }
-        else
-        {
-            Console.WriteLine("Bien joué ! Tu as enfermé l'IR");
-            return true;
-        }
+        Console.WriteLine("Pas d'enclos détecté");
+        return;
     }
-    else
+
+    // Vérifier si un autre personnage est dans l'enclos
+    bool IRSeule = true;
+    if (casesVisitees[positionYMaisie, positionXMaisie])
     {
-        Console.WriteLine("Pas d'enclos");
-        return false;
+        Console.WriteLine("Maisie est enfermée avec l'IR. Partie perdue !");
+        IRSeule = false;
+        finEnclos = true;
+    }
+    if (casesVisitees[positionYBlue, positionXBlue])
+    {
+        Console.WriteLine("Blue est enfermée avec l'IR. Partie perdue !");
+        IRSeule = false;
+        finEnclos = true;
+    }
+
+    if (IRSeule)
+    {
+        Console.WriteLine("L'IR est isolée seule dans l'enclos. Partie gagnée !");
+        finEnclos = true;
     }
 }
 
-// Cherche s'il y a un enclos et retourne true si c'est le cas
-
-bool RechercherEnclos(int positionXIR, int positionYIR, bool[,] casesEnclos, bool[,] casesVisitees)
+// Explorer la zone à partir d'une position
+void ExplorerZone(int x, int y, string[,] plateau, bool[,] casesVisitees)
 {
     int hauteur = plateau.GetLength(0);
     int largeur = plateau.GetLength(1);
-    int compt = 0;
 
-    // On démarre de la position de l'IR
-    int departX = positionXIR;
-    int departY = positionYIR;
-    RechercherProchain(plateau, departX, departY, casesVisitees);
-
-    // Compte le nombre de crevasses sur le plateau
-    for (int i = 0; i < plateau.GetLength(0); i++)
+    // Vérifier si la case est hors limites, déjà visitée ou sur une explosion
+    if (x < 0 || x >= largeur || y < 0 || y >= hauteur || casesVisitees[y, x] || plateau[y, x] == "💥")
     {
-        for (int j = 0; j < plateau.GetLength(1); j++)
-        {
-            if (plateau[i, j] != "💥")
-                compt++;
-        }
-    }
-    // Si il n'y a aucune crevasse ce n'est pas un enclos
-    if (compt == plateau.GetLength(0) * plateau.GetLength(1))
-        return false;
-
-    // Marquer les cases à l'intérieur de l'enclos
-    for (int i = 0; i < plateau.GetLength(0) - positionXIR; i++)
-    {
-        for (int j = 0; j < plateau.GetLength(1) - positionYIR; j++)
-        {
-            if (casesVisitees[j, i] && plateau[j, i] != "💥")  //On ne compte pas les bordures de l'enclos
-            {
-                casesEnclos[j, i] = true;
-            }
-        }
-    }
-    return true;
-}
-
-// Sous-programme qui recherche par itération les cases blanches à 'intérieur de l'enclos et rempli les tableaux casesEnclos et casesVisitees
-
-bool RechercherProchain(string[,] plateau, int departX, int departY, bool[,] casesVisitees)
-{
-    int hauteur = plateau.GetLength(0);
-    int largeur = plateau.GetLength(1);
-    int[,] directions = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } }; //Directions dans lesquelles rechercher
-
-    // Tableau simulant une file d'attente pour stocker les coordonnées
-    int[,] file = new int[hauteur * largeur, 2]; // Dim 1 = capacité max du tableau, Dim 2=2 pour les coordonnées X et Y
-    int sommetFile = -1;
-
-    // Ajouter le point de départ + le marquer comme visité
-    sommetFile++;
-    file[sommetFile, 0] = departX;
-    file[sommetFile, 1] = departY;
-    casesVisitees[departY, departX] = true;
-
-    while (sommetFile >= 0) // Tant qu'il reste des éléments dans la file d'attente
-    {
-        int x = file[sommetFile, 0];
-        int y = file[sommetFile, 1]; // On récupère ses coordonnées
-        sommetFile--;  // On l'enlève de la file
-
-        // On explore les 4 directions
-        for (int i = 0; i < 4; i++)
-        {
-            int nouveauX = x + directions[i, 1];
-            int nouveauY = y + directions[i, 0]; // Et calculer les nouvelles coordonnées
-
-            // On ignore ce qui est hors des limites du plateau
-            if (nouveauX < 0 || nouveauX >= largeur ||
-                nouveauY < 0 || nouveauY >= hauteur)
-                continue;
-
-            // On ignore les cases déjà visitées et les crevasses
-            if (casesVisitees[nouveauY, nouveauX] ||
-                plateau[nouveauY, nouveauX] == "💥")
-                continue;
-
-            // Si aucun obstacle ou pas déjà visitée, on la marque comme visitée
-            casesVisitees[nouveauY, nouveauX] = true;
-            sommetFile++;
-            file[sommetFile, 0] = nouveauX;
-            file[sommetFile, 1] = nouveauY; // Et on l'ajoute à la file pour explorer les cases qui entourent celle-ci
-        }
+        return;
     }
 
-    return true;
-}
+    // Marquer la case comme visitée
+    casesVisitees[y, x] = true;
 
-//Vérifie si autre personnage est dans l'enclos
-
-bool VerifierPersonnageEnferme(bool[,] casesEnclos, bool[,] casesVisitees)
-{
-    for (int y = 0; y < plateau.GetLength(0); y++)
-    {
-        for (int x = 0; x < plateau.GetLength(1); x++)
-        {
-            // On regarde si la case a été vérifiée et qu'elle est bien dans l'enclos
-            if (casesEnclos[y, x] && casesVisitees[y, x])
-            {
-                // On vérifie si un autre personnage est dans cette case
-                if ((y == positionYBlue && x == positionXBlue) ||
-                    (y == positionYOwen && x == positionXOwen) ||
-                    (y == positionYMaisie && x == positionXMaisie))
-                {
-                    return true; // Si un personnage y est
-                }
-            }
-        }
-    }
-    return false; // Si aucun autre personnage n'est enfermé
+    // Explorer dans les 4 directions à partir de cette case
+    ExplorerZone(x - 1, y, plateau, casesVisitees); // Gauche
+    ExplorerZone(x + 1, y, plateau, casesVisitees); // Droite
+    ExplorerZone(x, y - 1, plateau, casesVisitees); // Haut
+    ExplorerZone(x, y + 1, plateau, casesVisitees); // Bas
 }
 
 
@@ -833,6 +762,8 @@ do
     {
         plateau = CréerPlateau(HauteurPlateau(), LongueurPlateau());    // Réinitialise le plateau en début de partie
         RecupererCoord(plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXMaisie, ref positionYMaisie, ref positionXBlue, ref positionYBlue);
+        nbGrenade = plateau.GetLength(1);
+        nbGrenadeSpe = 0;
         pdvIR = 10 * nbGrenade;
         pdvMaisie = 100;
         pdvBlue = 100;
@@ -893,12 +824,12 @@ void Jeu(ref bool finPv, ref bool finCroc, ref bool finGrenade, ref bool finEncl
 
         RecupererGrenadeSpe(positionYOwen, positionXOwen);
 
-        Grenade(positionYOwen, positionXOwen, nbGrenade, ref pdvIR, ref pdvBlue, ref pdvMaisie, ref finGrenade, ref enervement);
+        Grenade(positionYOwen, positionXOwen, ref nbGrenade, ref pdvIR, ref pdvBlue, ref pdvMaisie, ref finGrenade, ref enervement, ref nbGrenadeSpe);
         if (finGrenade || finPv)
         {
             return; // La partie s'arrête si un personnage est tué par une grenade
         }
-        finEnclos = VerifierEnclos(positionXIR, positionYIR);
+        TesterEnclos(ref plateau, ref positionXOwen, ref positionYOwen, ref positionXIR, ref positionYIR, ref positionXBlue, ref positionYBlue, ref positionXMaisie, ref positionYMaisie);
     }
     Console.WriteLine("La partie est finie !");
 }
