@@ -94,7 +94,7 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
         Console.WriteLine("Entrez Oui ou Non");
         reponse = Console.ReadLine()!;
     }
-    while (!Enum.TryParse(reponse, out ChoixGrenade resultat));
+    while (!Enum.TryParse(reponse, out ChoixGrenade resultat) || int.TryParse(reponse, out _));
 
     if (reponse == "Oui" || reponse == "oui")
     {
@@ -105,7 +105,7 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
             Console.WriteLine("Entrez S ou N");
             type = Console.ReadLine()!;
         }
-        while (!Enum.TryParse(type, out ChoixType resultat));
+        while (!Enum.TryParse(type, out ChoixType resultat) || int.TryParse(type, out _));
 
         if (type == "S" || type == "s")
         {
@@ -119,7 +119,7 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
                         Console.WriteLine("Impossible, Owen ne peut pas se lancer de grenade dessus");
                     if ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
                         Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
-                    if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
+                    if (!EstDansLimites(coorXGrenade, coorYGrenade, plateau))
                         Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
                     SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 }
@@ -140,15 +140,11 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
                     }
                     else if (plateau[coorYGrenade, coorXGrenade] == "🟦")
                     {
-                        /*Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
-                        finGrenade = true;*/
-                        SystèmePV(ref pdvBlue, nomBlue, nomOwen);
+                        SystemePV(ref pdvBlue, nomBlue, nomOwen);
                     }
                     else if (plateau[coorYGrenade, coorXGrenade] == "🟪")
                     {
-                        /*Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
-                        finGrenade = true;*/
-                        SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
+                        SystemePV(ref pdvMaisie, nomMaisie, nomOwen);
                     }
                     else // sinon on crée une crevasse
                     {
@@ -158,20 +154,18 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
-                        while ((randomY == 0) && (randomX == 0) && !EstDansLimites(coorXGrenade + randomX, coorYGrenade + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit et prendre en compte les bordures
-                        {
-                            randomY = rng.Next(-1, 2);
-                            randomX = rng.Next(-1, 2);
-                        }
+                        while (((randomY == 0) && (randomX == 0)) || !EstDansLimites(coorXGrenade + randomX, coorYGrenade + randomY, plateau) || !CaseLibre(coorXGrenade + randomX, coorYGrenade + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit et prendre en compte les bordures
+
                         coorYGrenadeSpe = coorYGrenade + randomY;
                         coorXGrenadeSpe = coorXGrenade + randomX;
+
                         if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == "🟦")
                         {
-                            SystèmePV(ref pdvBlue, nomBlue, nomOwen);
+                            SystemePV(ref pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenadeSpe, coorXGrenadeSpe] == "🟪")
                         {
-                            SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
+                            SystemePV(ref pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
                             plateau[coorYGrenadeSpe, coorXGrenadeSpe] = "💥";
@@ -180,22 +174,18 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
-                        while ((randomY == 0) && (randomX == 0) && !EstDansLimites(coorXGrenadeSpe + randomX, coorYGrenadeSpe + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit
-                        {
-                            randomY = rng.Next(-1, 2);
-                            randomX = rng.Next(-1, 2);
-                        }
+                        while (((randomY == 0) && (randomX == 0)) || !EstDansLimites(coorXGrenadeSpe + randomX, coorYGrenadeSpe + randomY, plateau) || !CaseLibre(coorXGrenadeSpe + randomX, coorYGrenadeSpe + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit
                         if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == "🟦")
                         {
-                            SystèmePV(ref pdvBlue, nomBlue, nomOwen);
+                            SystemePV(ref pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] == "🟪")
                         {
-                            SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
+                            SystemePV(ref pdvMaisie, nomMaisie, nomOwen);
                         }
-                        plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] = "💥";
+                        else
+                            plateau[coorYGrenadeSpe + randomY, coorXGrenadeSpe + randomX] = "💥";
                     }
-
                 }
                 AfficherPlateau(plateau);
             }
@@ -217,7 +207,7 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
                         Console.WriteLine("Impossible, Owen ne peut pas se lancer de grenade dessus");
                     if ((coorYGrenade >= positionYOwen + 3) || (coorYGrenade <= positionYOwen - 3) || (coorXGrenade >= positionXOwen + 3) || (coorXGrenade <= positionXOwen - 3))
                         Console.WriteLine("Impossible, Owen a une portée de 3 cases maximum");
-                    if ((coorXGrenade >= plateau.GetLength(1)) || (coorXGrenade < 0) || (coorYGrenade >= plateau.GetLength(0)) || (coorYGrenade < 0))
+                    if (!EstDansLimites(coorXGrenade, coorYGrenade, plateau))
                         Console.WriteLine("Impossible, c'est en dehors des limites du plateau");
                     SelectionCoordoneesGrenade(ref coorYGrenade, ref coorXGrenade);
                 }
@@ -239,15 +229,11 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
                     }
                     else if (plateau[coorYGrenade, coorXGrenade] == "🟦")
                     {
-                        /*Console.WriteLine("Blue a été tuée par Owen. Fin de la partie.");
-                        finGrenade = true;*/
-                        SystèmePV(ref pdvBlue, nomBlue, nomOwen);
+                        SystemePV(ref pdvBlue, nomBlue, nomOwen);
                     }
                     else if (plateau[coorYGrenade, coorXGrenade] == "🟪")
                     {
-                        /*Console.WriteLine("Maisie a été tuée par Owen. Fin de la partie.");
-                        finGrenade = true;*/
-                        SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
+                        SystemePV(ref pdvMaisie, nomMaisie, nomOwen);
                     }
                     else // sinon on crée une crevasse
                     {
@@ -257,18 +243,14 @@ void Grenade(int positionYOwen, int positionXOwen, ref int nbGrenade, ref int pd
                             randomY = rng.Next(-1, 2);
                             randomX = rng.Next(-1, 2);
                         }
-                        while ((randomY == 0) && (randomX == 0) && !EstDansLimites(coorXGrenade + randomX, coorYGrenade + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit
-                        {
-                            randomY = rng.Next(-1, 2);
-                            randomX = rng.Next(-1, 2);
-                        }
+                        while (((randomY == 0) && (randomX == 0)) || !EstDansLimites(coorXGrenade + randomX, coorYGrenade + randomY, plateau) || !CaseLibre(coorXGrenade + randomX, coorYGrenade + randomY, plateau)); // Pour éviter que la case random soit la même que celle où la grenade atterit
                         if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == "🟦")
                         {
-                            SystèmePV(ref pdvBlue, nomBlue, nomOwen);
+                            SystemePV(ref pdvBlue, nomBlue, nomOwen);
                         }
                         else if (plateau[coorYGrenade + randomY, coorXGrenade + randomX] == "🟪")
                         {
-                            SystèmePV(ref pdvMaisie, nomMaisie, nomOwen);
+                            SystemePV(ref pdvMaisie, nomMaisie, nomOwen);
                         }
                         else
                             plateau[coorYGrenade + randomY, coorXGrenade + randomX] = "💥";
@@ -291,6 +273,11 @@ bool EstDansLimites(int x, int y, string[,] plateau)
 {
     return x >= 0 && x < plateau.GetLength(1) &&
            y >= 0 && y < plateau.GetLength(0);
+}
+
+bool CaseLibre(int x, int y, string[,] plateau)
+{
+    return plateau[y, x] != "💥" && plateau[y, x] != "🟥" && plateau[y, x] != "🟩"; //IR n'est pas affectée par les crevasses crée par les grenades, Owen non plus
 }
 
 //Entrer les coordonnées de la Grenade
@@ -329,7 +316,7 @@ void SelectionCoordoneesGrenade(ref int coorYGrenade, ref int coorXGrenade)
 
 //Sous programme pour gérer les points de vie de Maisie et Blue en cas d'impact
 
-void SystèmePV(ref int pV, string nom, string owen)
+void SystemePV(ref int pV, string nom, string owen)
 {
 
     pV -= 50;
