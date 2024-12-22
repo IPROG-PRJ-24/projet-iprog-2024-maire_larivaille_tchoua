@@ -8,7 +8,7 @@ Console.WriteLine("Vous courrez un grand danger, l'Indominus Rex s'est échappé
 Console.WriteLine("Pour ce faire, Owen dispose de grenades : ");
 Console.WriteLine("- Une grenade normale crée deux crevasses");
 Console.WriteLine("- Une grenade spéciale crée trois crevasses");
-Console.WriteLine("On considère qu'un enclos est crée lorsque l'Indominus Rex ne peut pas atteindre Owen.");
+Console.WriteLine("On considère qu'un enclos est créé lorsque l'Indominus Rex ne peut pas atteindre Owen.");
 Console.WriteLine("Pour remporter la partie, il faut qu'elle soit enfermée toute seule dans cet enclos.");
 Console.WriteLine("Un enclos est délimité par des crevasses et/ou les bords du plateau");
 Console.WriteLine("Attention à Maisie et Blue qui pourraient se retrouver coincées avec l'Indominux Rex");
