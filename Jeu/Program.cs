@@ -1,13 +1,16 @@
 ﻿// Règles du jeu
-Console.ForegroundColor = ConsoleColor.Red;
+Console.WriteLine("");
+Console.ForegroundColor = ConsoleColor.Blue;
 Console.WriteLine("Bienvenue sur JurENSiC World !");
-Console.ForegroundColor = ConsoleColor.Clear;
+Console.WriteLine("");
+Console.ForegroundColor = ConsoleColor.White;
 Console.WriteLine("Vous courrez un grand danger, l'Indominus Rex s'est échappée... votre but est donc de l'enfermer dans un enclos.");
 Console.WriteLine("Pour ce faire, Owen dispose de grenades : ");
 Console.WriteLine("- Une grenade normale crée deux crevasses");
 Console.WriteLine("- Une grenade spéciale crée trois crevasses");
 Console.WriteLine("On considère qu'un enclos est crée lorsque l'Indominus Rex ne peut pas atteindre Owen.");
-Console.WriteLine("Pour remporter la partie, il faut qu'elle soit enfermée toute seule dans cette enclos délimité par des crevasses et/ou les bords du plateau");
+Console.WriteLine("Pour remporter la partie, il faut qu'elle soit enfermée toute seule dans cet enclos.");
+Console.WriteLine("Un enclos est délimité par des crevasses et/ou les bords du plateau");
 Console.WriteLine("Attention à Maisie et Blue qui pourraient se retrouver coincées avec l'Indominux Rex");
 Console.WriteLine("");
 Console.WriteLine("L'Indominus Rex et Maisie se déplacent aléatoirement dans 4 directions : Haut, Bas, Gauche et Droite.");
@@ -16,14 +19,19 @@ Console.WriteLine("Owen peut décider à chaque tour de lancer ou non une grenad
 Console.WriteLine("La longueur du plateau déterminera votre nombre de grenades normales.");
 Console.WriteLine("Pour obtenir des grenades spéciales, ramassez les sur le plateau ! (symbole 🧨)");
 Console.WriteLine("Toutefois, attention en lançant vos grenades, elles pourraient blesser Blue ou Maisie qui ne survivraient pas à une seconde explosion");
-Console.WriteLine("Si vous arrivez à toucher l'Indominus, elle perdra des points de vie, il faudra donc lui envoyer au moins toutes vos grenades normales pour remporter la partie.");
+Console.WriteLine("Si vous arrivez à toucher l'Indominus, elle perdra des points de vie.");
+Console.WriteLine("Il faudra donc lui envoyer au moins toutes vos grenades normales pour remporter la partie.");
 Console.WriteLine("Mais soyez sûrs de vous, si vous n'avez plus de grenades c'est fini...");
 Console.WriteLine("Protégez Maisie et vous même, l'Indominus est féroce et pourrait vous croquer");
 Console.WriteLine("Blue est trop rapide pour se faire croquer mais elle a des capacités intéressantes : ");
 Console.WriteLine("Si elle se trouve sur la même case que l'Indominus, elle la fera reculer de 3 cases dans la direction de votre choix");
 Console.WriteLine("Pratique non?");
 Console.WriteLine("Au fait, c'est vous qui choisissez les dimensions du plateau.");
+Console.WriteLine("");
 Console.WriteLine("Bon courage, JurENSiC World compte sur vous ! ");
+Console.WriteLine("");
+Console.WriteLine("");
+
 
 
 //Légende 
