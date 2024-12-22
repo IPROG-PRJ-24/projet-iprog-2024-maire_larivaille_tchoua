@@ -544,55 +544,106 @@ void RecupererCoord(string[,] plateau, ref int positionXOwen, ref int positionYO
 
 void DeplacementAleatoire(string personnage, ref int x, ref int y)
 {
-    int newX;
-    int newY;
-    int nbrCaseX;
-    int nbrCaseY;
     bool deplacementValide = false;
     Random rng = new Random();
 
     do
     {
-        if (personnage == "🟥" && enervement == true)   // Si l'Indominus est énervée elle peut se déplacer de 2 cases à la fois
+        // Générer une direction aléatoire (0 = ouest, 1 = est, 2 = nord, 3 = sud)
+        // Eviter les déplacements en diagonale
+        int direction = rng.Next(0, 4);
+        int deltaX = 0;
+        int deltaY = 0;
+        int tentativeX = x;
+        int tentativeY = y;
+
+        // Calculer les positions relatives en fonction de la direction
+        switch (direction)
         {
-            nbrCaseX = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée x
-            nbrCaseY = rng.Next(-2, 3); // Génère un chiffre aléatoire entre -2 et 2 pour changer la valeur de la coordonnée y
-        }
-        else
-        {
-            nbrCaseX = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée x
-            nbrCaseY = rng.Next(-1, 2); // Génère un chiffre aléatoire entre -1 et 1 pour changer la valeur de la coordonnée y
+            case 0: // Ouest
+                deltaX = -1;
+                break;
+            case 1: // Est
+                deltaX = 1;
+                break;
+            case 2: // Nord
+                deltaY = -1;
+                break;
+            case 3: // Sud
+                deltaY = 1;
+                break;
         }
 
-        if (nbrCaseX != 0 && nbrCaseY != 0)    // Si le déplacement n'est pas nul (les deux coordonnées restent les mêmes)
+        if (personnage == "🟪") // Si Maisie, elle ne peut se déplacer que d'une case
         {
-            newX = x + nbrCaseX;
-            newY = y + nbrCaseY;
-            if (newX > 0 && newY > 0 && newX < plateau.GetLength(1) && newY < plateau.GetLength(0))
+            tentativeX += deltaX;
+            tentativeY += deltaY;
+
+            if (tentativeX >= 0 && tentativeY >= 0 && tentativeX < plateau.GetLength(1) && tentativeY < plateau.GetLength(0))
             {
-                if ((personnage == "🟪") && (plateau[newY, newX] == "⬜")) //Maisie ne peut pas tomber par accident sur IR, ni sur un autre joueur, ni sur une crevasse ou une grenade spéciale
+                if (plateau[tentativeY, tentativeX] == "⬜")
                 {
                     deplacementValide = true;
-                    plateau[y, x] = "⬜";   // Réinitialise le plateau
-                    y = newY;   // Met à jour les coordonnées après déplacement
-                    x = newX;
-                    plateau[y, x] = personnage; // Prend la nouvelle position du personnage
+                    plateau[y, x] = "⬜"; // Réinitialiser la case précédente
+                    y = tentativeY; // Mettre à jour les coordonnées
+                    x = tentativeX;
+                    plateau[y, x] = personnage; // Positionner Maisie sur la nouvelle case
                     Console.WriteLine("Maisie s'est déplacée.");
                 }
-                if ((personnage == "🟥") && (plateau[newY, newX] != "💥") && (plateau[newY, newX] != "🧨") && (plateau[newY, newX] != "🟦"))  //IR peut tomber sur un autre joueur et le tuer (sauf Blue car elle est trop rapide)
+            }
+        }
+        else    // Si l'IR
+        {
+            if (enervement == false)    //Déplacement d'une case
+            {
+                tentativeX += deltaX;
+                tentativeY += deltaY;
+
+                if (tentativeX >= 0 && tentativeY >= 0 && tentativeX < plateau.GetLength(1) && tentativeY < plateau.GetLength(0))
+                {
+                    if (plateau[tentativeY, tentativeX] != "💥" && plateau[tentativeY, tentativeX] != "🟦")
+                    {
+                        deplacementValide = true;
+                        plateau[y, x] = "⬜"; // Réinitialiser la case précédente
+                        y = tentativeY; // Mettre à jour les coordonnées
+                        x = tentativeX;
+                        plateau[y, x] = personnage; // Positionner l'IR sur la nouvelle case
+                        Console.WriteLine("L'IR s'est déplacée.");
+                    }
+                }
+
+            }
+            else    // Si l'IR énervé, il peut se déplacer de deux cases 
+            {
+                for (int i = 1; i <= 2; i++)
+                {
+                    tentativeX = x + deltaX * i;
+                    tentativeY = y + deltaY * i;
+
+                    // Vérifier les limites du plateau et les obstacles
+                    if (tentativeX < 0 || tentativeX >= plateau.GetLength(1) ||
+                        tentativeY < 0 || tentativeY >= plateau.GetLength(0) ||
+                        plateau[tentativeY, tentativeX] == "💥" || plateau[tentativeY, tentativeX] == "🟦")
+                    {
+                        // Si la limite ou un obstacle est atteint, ne pas aller plus loin
+                        tentativeX = x + deltaX * (i-1);
+                        tentativeY = y + deltaY * (i-1);
+                        i = 4; // Forcer la fin de la boucle
+                    }
+                }
+                if (tentativeX != x || tentativeY != y) // Eviter un déplacement nul
                 {
                     deplacementValide = true;
-                    plateau[y, x] = "⬜";
-                    y = newY;
-                    x = newX;
-                    plateau[y, x] = personnage;
-                    Console.WriteLine("IR s'est déplacée.");
+                    plateau[y, x] = "⬜"; // Réinitialiser la case précédente
+                    y = tentativeY; // Mettre à jour les coordonnées
+                    x = tentativeX;
+                    plateau[y, x] = personnage; // Positionner l'IR sur la nouvelle case
+                    Console.WriteLine("L'IR s'est déplacée.");
                 }
             }
         }
 
     } while (!deplacementValide);
-
 }
 
 
@@ -637,15 +688,27 @@ void DeplacementClavier(string personnage, ref int x, ref int y, string nom)
             newX = x; // On reprend les coordonnées initiales
             newY = y;
         }
-        else if ((plateau[newY, newX] == "🧨") && (personnage == "🟩")) // Si grenade spéciale et Owen (les autres perso ne peuvent pas récup de grenades spéciales)
+        else if ((plateau[newY, newX] == "🧨")) // Si grenade spéciale 
         {
-            nbGrenadeSpe += 1;
-            plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
-            y = newY; // Met à jour les coordonnées après déplacement
-            x = newX;
-            plateau[y, x] = personnage; // Met à jour la position d'Owen
-            Console.WriteLine($"Owen a récupéré une grenade spéciale ! Vous avez désormais {nbGrenadeSpe} grenade(s) spéciale(s)");
-            deplacementValide = true;
+            if (personnage == "🟩") 
+            {
+                nbGrenadeSpe += 1; // Owen récupère la grenade spéciale
+                plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
+                y = newY; // Met à jour les coordonnées après déplacement
+                x = newX;
+                plateau[y, x] = personnage; // Met à jour la position d'Owen
+                Console.WriteLine($"Owen a récupéré une grenade spéciale ! Vous avez désormais {nbGrenadeSpe} grenade(s) spéciale(s)");
+                deplacementValide = true;
+            }
+            else // Si c'est Blue elle peut aller sur une grenade spéciale mais elle ne sera plus récupérable par Owen ensuite
+            {
+                plateau[y, x] = "⬜"; // Réinitialise l'ancienne case
+                y = newY;
+                x = newX;
+                plateau[y, x] = personnage; // Met à jour la position du personnage
+                Console.WriteLine("Oups, Blue a écrasé une grenade spéciale : elle ne pourra plus etre récupérée par Owen !");
+                deplacementValide = true;
+            }
         }
         else if ((plateau[newY, newX] != "⬜") && (plateau[newY, newX] != "🟥"))
         {
